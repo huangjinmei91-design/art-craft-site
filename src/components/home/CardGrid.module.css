@@ -1,0 +1,186 @@
+.conceptCard,
+.objectCard,
+.timelineCard {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.conceptCard:hover,
+.conceptCard:focus-visible,
+.objectCard:hover,
+.objectCard:focus-visible,
+.timelineCard:hover,
+.timelineCard:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+  outline: none;
+}
+
+.imageFrame,
+.objectImageFrame,
+.timelineImageFrame {
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.conceptCard {
+  min-height: 320px;
+  border-radius: var(--radius-card);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.45));
+}
+
+.conceptCard:nth-child(1) {
+  background: linear-gradient(180deg, #c99a68, #8e6439);
+}
+
+.conceptCard:nth-child(2) {
+  background: linear-gradient(180deg, #71705d, #494734);
+}
+
+.conceptCard:nth-child(3) {
+  background: linear-gradient(180deg, #7f7962, #56503e);
+}
+
+.imageFrame {
+  position: absolute;
+  inset: 0;
+  opacity: 0.92;
+}
+
+.conceptOverlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 320px;
+  padding: 28px 26px;
+  color: #fffefb;
+}
+
+.conceptTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1.02;
+}
+
+.conceptDescription {
+  margin: 0;
+  max-width: 14ch;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.objectCard {
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.objectBody {
+  padding: 22px 22px 18px;
+}
+
+.objectTitle {
+  margin: 0 0 6px;
+  color: var(--ink-strong);
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.objectNumber {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.objectImageFrame {
+  height: 250px;
+  border-top: 1px solid var(--line);
+  background: #eff2f5;
+}
+
+.timelineCard {
+  display: block;
+}
+
+.timelineImageFrame {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.timelineImageFrame .image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.timelineOverlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 14px 12px;
+}
+
+.timelineCaptionBox {
+  width: min(42%, 168px);
+  min-height: 84px;
+  padding: 12px 14px;
+  color: #fffefb;
+}
+
+.timelineCaptionLine {
+  margin: 0;
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: clamp(18px, 1.65vw, 22px);
+  font-weight: 700;
+  line-height: 1.08;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.timelineCaptionLine + .timelineCaptionLine {
+  margin-top: 6px;
+}
+
+@media (max-width: 900px) {
+  .conceptOverlay {
+    min-height: 260px;
+  }
+
+  .conceptTitle {
+    font-size: 34px;
+  }
+
+  .objectTitle {
+    font-size: 18px;
+  }
+
+  .timelineOverlay {
+    padding: 0 10px 10px;
+  }
+
+  .timelineCaptionBox {
+    width: min(44%, 144px);
+    min-height: 68px;
+    padding: 10px 12px;
+  }
+
+  .timelineCaptionLine {
+    font-size: 16px;
+  }
+}

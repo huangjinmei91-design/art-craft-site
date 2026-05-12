@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520">
+  <rect width="960" height="520" fill="#edf1ee"/>
+  <circle cx="480" cy="250" r="92" fill="#8aa095"/>
+  <text x="480" y="262" fill="#ffffff" font-size="46" font-family="Songti SC, serif" text-anchor="middle">格物</text>
+  <path d="M230 188h160M570 188h160M230 318h160M570 318h160" stroke="#9ba89f" stroke-width="6" stroke-linecap="round"/>
+  <rect x="116" y="128" width="200" height="112" rx="18" fill="#ffffff"/>
+  <rect x="644" y="128" width="200" height="112" rx="18" fill="#ffffff"/>
+  <rect x="116" y="262" width="200" height="112" rx="18" fill="#ffffff"/>
+  <rect x="644" y="262" width="200" height="112" rx="18" fill="#ffffff"/>
+  <text x="216" y="176" fill="#46534c" font-size="26" text-anchor="middle">观其形质</text>
+  <text x="744" y="176" fill="#46534c" font-size="26" text-anchor="middle">知其工序</text>
+  <text x="216" y="310" fill="#46534c" font-size="26" text-anchor="middle">察其尺度</text>
+  <text x="744" y="310" fill="#46534c" font-size="26" text-anchor="middle">成其日用</text>
+</svg>

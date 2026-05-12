@@ -1,0 +1,33 @@
+{
+  "name": "art-and-craft-frontpage",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "prebuild": "npm run import:demo",
+    "build": "next build",
+    "start": "next start",
+    "import:demo": "node ./scripts/import-master-demo.mjs",
+    "test": "tsx --test --import ./src/test/setup.ts \"src/**/*.test.ts\" \"src/**/*.test.tsx\"",
+    "test:watch": "tsx --watch --test --import ./src/test/setup.ts \"src/**/*.test.ts\" \"src/**/*.test.tsx\"",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.10.1",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,8 @@
+.next
+node_modules
+.superpowers
+coverage
+.DS_Store
+.tools
+.vercel
+skill/superpowers
