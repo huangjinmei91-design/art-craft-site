@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Header } from "@/components/layout/Header";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { OverviewCard } from "./OverviewCard";
-import { buildSearchEntries, getHomePageData, type Locale } from "@/data/home";
+import { buildSearchEntries, getHomePageData } from "@/data/home";
 import { getCatalogContent } from "@/data/catalog";
 import styles from "./CatalogPage.module.css";
+import { usePreferredLocale } from "@/components/usePreferredLocale";
 
 type IndexKind = "concepts" | "objects" | "timeline";
 
@@ -14,16 +15,9 @@ const copy = {
   concepts: {
     breadcrumbHans: "探索理念",
     breadcrumbHant: "探索理念",
-    eyebrow: "Concept Index",
-    titleHans: "以理念组织观看路径",
-    titleHant: "以理念組織觀看路徑",
-    summaryHans:
-      "从融合、秩序与禅意三条线索进入内容，帮助访客先理解世界观，再进入器物与时代。",
-    summaryHant:
-      "從融合、秩序與禪意三條線索進入內容，幫助訪客先理解世界觀，再進入器物與時代。",
     meta: {
-      hans: "理念专题",
-      hant: "理念專題"
+      hans: "",
+      hant: ""
     },
     cta: {
       hans: "进入专题",
@@ -71,7 +65,7 @@ const copy = {
 } as const;
 
 export function CatalogIndexClient({ kind }: { kind: IndexKind }) {
-  const [locale, setLocale] = useState<Locale>("zh-Hans");
+  const [locale, setLocale] = usePreferredLocale("zh-Hans");
   const home = useMemo(() => getHomePageData(locale), [locale]);
   const catalog = useMemo(() => getCatalogContent(locale), [locale]);
   const searchEntries = useMemo(() => buildSearchEntries(home), [home]);
@@ -99,35 +93,25 @@ export function CatalogIndexClient({ kind }: { kind: IndexKind }) {
                   : pageCopy.breadcrumbHant}
               </span>
             </div>
-            <p className={styles.eyebrow}>{pageCopy.eyebrow}</p>
-            <h1 className={styles.title}>
-              {locale === "zh-Hans" ? pageCopy.titleHans : pageCopy.titleHant}
-            </h1>
-            <p className={styles.summary}>
-              {locale === "zh-Hans" ? pageCopy.summaryHans : pageCopy.summaryHant}
-            </p>
           </section>
 
           <section className={styles.section}>
-            <div className={styles.grid}>
+            <div
+              className={kind === "concepts" ? styles.conceptGrid : styles.grid}
+            >
               {kind === "concepts"
                 ? catalog.concepts.map((item) => (
                     <OverviewCard
                       key={item.slug}
                       title={item.title}
-                      summary={item.summary}
                       image={item.image}
                       href={item.href}
-                      meta={
-                        locale === "zh-Hans"
-                          ? pageCopy.meta.hans
-                          : pageCopy.meta.hant
-                      }
                       ctaLabel={
                         locale === "zh-Hans"
                           ? pageCopy.cta.hans
                           : pageCopy.cta.hant
                       }
+                      variant="conceptIndex"
                     />
                   ))
                 : null}

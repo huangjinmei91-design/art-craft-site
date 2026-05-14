@@ -12,6 +12,7 @@ export type HeroSlide = {
   subtitle: string;
   image: string;
   alt: string;
+  href: string;
 };
 
 export type ConceptCard = {
@@ -89,8 +90,40 @@ export type HomePageData = {
   timelineItems: TimelineItem[];
 };
 
+function createSeededOrder(items: ObjectCard[], seed: number): ObjectCard[] {
+  const normalizedSeed = Number.isFinite(seed) && seed > 0 ? seed : 1;
+
+  return items
+    .map((item, index) => {
+      let hash = normalizedSeed + index * 2654435761;
+      const source = `${item.href}:${item.accessionNumber}`;
+
+      for (const char of source) {
+        hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
+      }
+
+      return {
+        item,
+        hash: hash >>> 0
+      };
+    })
+    .sort((left, right) => left.hash - right.hash)
+    .map((entry) => entry.item);
+}
+
 function createHomePageContent(locale: Locale): HomePageData {
   const catalog = getCatalogContent(locale);
+  const heroSlideOrder = ["utility", "fusion", "harmony"];
+  const heroSlides = heroSlideOrder
+    .map((slug) => catalog.concepts.find((entry) => entry.slug === slug))
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+    .map((entry) => ({
+      title: entry.title,
+      subtitle: entry.heroSubtitle,
+      image: entry.image,
+      alt: `${entry.title} 首页主视觉`,
+      href: entry.href
+    }));
 
   return {
     header: {
@@ -148,39 +181,11 @@ function createHomePageContent(locale: Locale): HomePageData {
       timeline: {
         id: "timeline",
         title: locale === "zh-Hans" ? "时代长廊" : "時代長廊",
-        actionLabel: locale === "zh-Hans" ? "进入时代线索" : "進入時代線索",
+        actionLabel: locale === "zh-Hans" ? "进入时代长廊" : "進入時代長廊",
         href: "/timeline"
       }
     },
-    heroSlides: [
-      {
-        title: locale === "zh-Hans" ? "格物致用" : "格物致用",
-        subtitle:
-          locale === "zh-Hans"
-            ? "以中国传统工艺，观美学之境，思哲学之理"
-            : "以中國傳統工藝，觀美學之境，思哲學之理",
-        image: "/images/hero-celadon-bowl.svg",
-        alt: locale === "zh-Hans" ? "青瓷器物主视觉" : "青瓷器物主視覺"
-      },
-      {
-        title: locale === "zh-Hans" ? "器以载道" : "器以載道",
-        subtitle:
-          locale === "zh-Hans"
-            ? "从器物纹理与工序中，理解古人的审美与秩序"
-            : "從器物紋理與工序中，理解古人的審美與秩序",
-        image: "/images/hero-bronze-dish.svg",
-        alt: locale === "zh-Hans" ? "金属器物主视觉" : "金屬器物主視覺"
-      },
-      {
-        title: locale === "zh-Hans" ? "万象入卷" : "萬象入卷",
-        subtitle:
-          locale === "zh-Hans"
-            ? "在时间与工艺之间，重访中国文化的绵长叙事"
-            : "在時間與工藝之間，重訪中國文化的綿長敘事",
-        image: "/images/hero-scroll-landscape.svg",
-        alt: locale === "zh-Hans" ? "卷轴山水主视觉" : "卷軸山水主視覺"
-      }
-    ],
+    heroSlides,
     conceptCards: catalog.concepts
       .filter((entry) => entry.featuredOnHome)
       .map((entry) => ({
@@ -190,7 +195,6 @@ function createHomePageContent(locale: Locale): HomePageData {
       href: entry.href
     })),
     objectCards: catalog.objects
-      .filter((entry) => entry.featuredOnHome)
       .map((entry) => ({
       title: entry.title,
       accessionNumber: entry.accessionNumber,
@@ -212,6 +216,18 @@ function createHomePageContent(locale: Locale): HomePageData {
 
 export function getHomePageData(locale: Locale): HomePageData {
   return createHomePageContent(locale);
+}
+
+export function selectHomepageObjectCards(
+  cards: ObjectCard[],
+  seed: number,
+  count = 6
+): ObjectCard[] {
+  const uniqueCards = cards.filter(
+    (card, index, list) => list.findIndex((item) => item.href === card.href) === index
+  );
+
+  return createSeededOrder(uniqueCards, seed).slice(0, count);
 }
 
 export function buildSearchEntries(data: HomePageData): SearchEntry[] {

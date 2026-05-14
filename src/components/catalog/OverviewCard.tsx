@@ -6,23 +6,38 @@ export function OverviewCard({
   image,
   href,
   meta,
-  ctaLabel
+  ctaLabel,
+  variant = "default"
 }: {
   title: string;
-  summary: string;
+  summary?: string;
   image: string;
   href: string;
-  meta: string;
+  meta?: string;
   ctaLabel: string;
+  variant?: "default" | "conceptIndex";
 }) {
   return (
-    <a href={href} className={styles.overviewCard}>
-      <div className={styles.overviewImage}>
+    <a
+      href={href}
+      className={
+        variant === "conceptIndex"
+          ? `${styles.overviewCard} ${styles.conceptOverviewCard}`
+          : styles.overviewCard
+      }
+    >
+      <div
+        className={
+          variant === "conceptIndex"
+            ? `${styles.overviewImage} ${styles.conceptOverviewImage}`
+            : styles.overviewImage
+        }
+      >
         <img src={image} alt={title} />
       </div>
-      <div className={styles.overviewMeta}>{meta}</div>
+      {meta ? <div className={styles.overviewMeta}>{meta}</div> : null}
       <h2 className={styles.overviewTitle}>{title}</h2>
-      <p className={styles.overviewSummary}>{summary}</p>
+      {summary ? <p className={styles.overviewSummary}>{summary}</p> : null}
       <span className={styles.overviewCta}>
         {ctaLabel}
         <span aria-hidden="true">→</span>

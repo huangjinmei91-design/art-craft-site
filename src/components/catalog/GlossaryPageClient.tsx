@@ -1,15 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Header } from "@/components/layout/Header";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { findGlossaryBySlug } from "@/data/catalog";
-import { getHomePageData, type Locale } from "@/data/home";
+import { getHomePageData } from "@/data/home";
 import { GlossaryDetailView } from "./GlossaryDetailView";
 import styles from "./CatalogPage.module.css";
+import { usePreferredLocale } from "@/components/usePreferredLocale";
 
 export function GlossaryPageClient({ slug }: { slug: string }) {
-  const [locale, setLocale] = useState<Locale>("zh-Hans");
+  const [locale, setLocale] = usePreferredLocale("zh-Hans");
   const home = useMemo(() => getHomePageData(locale), [locale]);
   const entry = findGlossaryBySlug(locale, slug);
 

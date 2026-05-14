@@ -4,8 +4,9 @@ import { useMemo, useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { getCatalogContent } from "@/data/catalog";
-import { getHomePageData, type Locale } from "@/data/home";
+import { getHomePageData } from "@/data/home";
 import styles from "./SearchPage.module.css";
+import { usePreferredLocale } from "@/components/usePreferredLocale";
 
 type SortKey = "featured" | "name" | "dynasty" | "material";
 
@@ -14,7 +15,7 @@ function toggleValue(list: string[], value: string): string[] {
 }
 
 export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string }) {
-  const [locale, setLocale] = useState<Locale>("zh-Hans");
+  const [locale, setLocale] = usePreferredLocale("zh-Hans");
   const [query, setQuery] = useState(initialQuery);
   const [sort, setSort] = useState<SortKey>("featured");
   const [dynasties, setDynasties] = useState<string[]>([]);
@@ -85,6 +86,14 @@ export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string 
     ...materials
   ];
 
+  const copy = {
+    keywords: locale === "zh-Hans" ? "关键词" : "關鍵詞",
+    dynasty: locale === "zh-Hans" ? "时代" : "時代",
+    color: locale === "zh-Hans" ? "颜色" : "顏色",
+    material: locale === "zh-Hans" ? "材质" : "材質",
+    emptyKeywords: locale === "zh-Hans" ? "输入关键词或筛选条件" : "輸入關鍵詞或篩選條件"
+  };
+
   return (
     <main className={styles.page}>
       <PageContainer>
@@ -99,7 +108,7 @@ export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string 
           <section className={styles.content}>
             <aside className={styles.sidebar}>
               <div className={styles.filterBlock}>
-                <h2 className={styles.filterTitle}>Keywords</h2>
+                <h2 className={styles.filterTitle}>{copy.keywords}</h2>
                 <div className={styles.keywordChips}>
                   {activeKeywords.length > 0 ? (
                     activeKeywords.map((item) => (
@@ -108,13 +117,13 @@ export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string 
                       </span>
                     ))
                   ) : (
-                    <span className={styles.keywordEmpty}>输入关键词或筛选条件</span>
+                    <span className={styles.keywordEmpty}>{copy.emptyKeywords}</span>
                   )}
                 </div>
               </div>
 
               <div className={styles.filterBlock}>
-                <h2 className={styles.filterTitle}>Dynasty</h2>
+                <h2 className={styles.filterTitle}>{copy.dynasty}</h2>
                 {filterOptions.dynasties.map((item) => (
                   <label key={item} className={styles.filterOption}>
                     <input
@@ -128,7 +137,7 @@ export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string 
               </div>
 
               <div className={styles.filterBlock}>
-                <h2 className={styles.filterTitle}>Color</h2>
+                <h2 className={styles.filterTitle}>{copy.color}</h2>
                 {filterOptions.colors.map((item) => (
                   <label key={item} className={styles.filterOption}>
                     <input
@@ -142,7 +151,7 @@ export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string 
               </div>
 
               <div className={styles.filterBlock}>
-                <h2 className={styles.filterTitle}>Material</h2>
+                <h2 className={styles.filterTitle}>{copy.material}</h2>
                 {filterOptions.materials.map((item) => (
                   <label key={item} className={styles.filterOption}>
                     <input

@@ -506,6 +506,48 @@ function buildImportedConceptSeeds(): EssaySeed[] {
       const introBodyHant = splitField(getRowValue(row, "intro_body_zh_hant"));
       const sectionBodyHans = splitField(getRowValue(row, "section_1_body_zh_hans"));
       const sectionBodyHant = splitField(getRowValue(row, "section_1_body_zh_hant"));
+      const section2BodyHans = splitField(getRowValue(row, "section_2_body_zh_hans"));
+      const section2BodyHant = splitField(getRowValue(row, "section_2_body_zh_hant"));
+      const section1Media = [1, 2, 3, 4]
+        .map((index) => {
+          const image = getRowValue(row, `section_1_image_${index}`);
+
+          if (!image) {
+            return null;
+          }
+
+          return {
+            image,
+            alt: createLocalizedText(
+              getRowValue(row, "title_zh_hans"),
+              getRowValue(row, "title_zh_hant")
+            ),
+            caption: getRowValue(row, `section_1_image_${index}_caption_zh_hans`)
+              ? createLocalizedText(
+                  getRowValue(row, `section_1_image_${index}_caption_zh_hans`),
+                  getRowValue(row, `section_1_image_${index}_caption_zh_hant`)
+                )
+              : undefined
+          };
+        })
+        .filter((item): item is NonNullable<typeof item> => Boolean(item));
+      const section2Media = getRowValue(row, "section_2_image_1")
+        ? [
+            {
+              image: getRowValue(row, "section_2_image_1"),
+              alt: createLocalizedText(
+                getRowValue(row, "title_zh_hans"),
+                getRowValue(row, "title_zh_hant")
+              ),
+              caption: getRowValue(row, "section_2_image_1_caption_zh_hans")
+                ? createLocalizedText(
+                    getRowValue(row, "section_2_image_1_caption_zh_hans"),
+                    getRowValue(row, "section_2_image_1_caption_zh_hant")
+                  )
+                : undefined
+            }
+          ]
+        : [];
 
       return {
         slug: getRowValue(row, "slug"),
@@ -545,31 +587,36 @@ function buildImportedConceptSeeds(): EssaySeed[] {
               }
             ]
           : [],
-        sections:
-          getRowValue(row, "section_1_heading_zh_hans") || sectionBodyHans.length > 0
+        sections: [
+          ...(getRowValue(row, "section_1_heading_zh_hans") || sectionBodyHans.length > 0 || section1Media.length > 0
             ? [
                 {
                   heading: createLocalizedText(
-                    getRowValue(row, "section_1_heading_zh_hans") || "延伸展开",
+                    getRowValue(row, "section_1_heading_zh_hans") || "文化源流",
                     getRowValue(row, "section_1_heading_zh_hant")
                   ),
                   body: sectionBodyHans.map((item, index) =>
                     createLocalizedText(item, sectionBodyHant[index] ?? "")
                   ),
-                  media: getRowValue(row, "section_1_image_1")
-                    ? [
-                        {
-                          image: getRowValue(row, "section_1_image_1"),
-                          alt: createLocalizedText(
-                            getRowValue(row, "title_zh_hans"),
-                            getRowValue(row, "title_zh_hant")
-                          )
-                        }
-                      ]
-                    : []
+                  media: section1Media
                 }
               ]
-            : [],
+            : []),
+          ...(getRowValue(row, "section_2_heading_zh_hans") || section2BodyHans.length > 0 || section2Media.length > 0
+            ? [
+                {
+                  heading: createLocalizedText(
+                    getRowValue(row, "section_2_heading_zh_hans") || "理蕴于形",
+                    getRowValue(row, "section_2_heading_zh_hant")
+                  ),
+                  body: section2BodyHans.map((item, index) =>
+                    createLocalizedText(item, section2BodyHant[index] ?? "")
+                  ),
+                  media: section2Media
+                }
+              ]
+            : [])
+        ],
         relatedObjectSlugs: splitField(getRowValue(row, "related_object_slugs")),
         references: referenceHrefs.map((href, index) => ({
           label: createLocalizedText(referenceLabelsHans[index] ?? href, referenceLabelsHant[index] ?? ""),
@@ -2518,10 +2565,11 @@ export function getCatalogContent(locale: Locale): CatalogContent {
         : null,
       relatedObjects: getRelatedObjectCards(
         locale,
-        entry.relatedObjectSlugs,
+        [],
         objectSeeds
           .filter((object) => object.conceptSlugs.includes(entry.slug))
-          .map((object) => object.slug)
+          .map((object) => object.slug),
+        4
       ),
       references: localizeReferences(locale, entry.references),
       featuredOnHome: entry.featuredOnHome,

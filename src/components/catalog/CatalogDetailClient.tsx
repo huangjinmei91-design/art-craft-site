@@ -1,17 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Header } from "@/components/layout/Header";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { getHomePageData, type Locale } from "@/data/home";
+import { getHomePageData } from "@/data/home";
 import {
   findConceptBySlug,
   findObjectBySlug,
   findTimelineBySlug
 } from "@/data/catalog";
 import { EssayDetailView } from "./EssayDetailView";
+import { ConceptDetailView } from "./ConceptDetailView";
 import { ObjectDetailView } from "./ObjectDetailView";
 import styles from "./CatalogPage.module.css";
+import { usePreferredLocale } from "@/components/usePreferredLocale";
 
 type DetailKind = "concepts" | "objects" | "timeline";
 
@@ -22,7 +24,7 @@ export function CatalogDetailClient({
   kind: DetailKind;
   slug: string;
 }) {
-  const [locale, setLocale] = useState<Locale>("zh-Hans");
+  const [locale, setLocale] = usePreferredLocale("zh-Hans");
   const home = useMemo(() => getHomePageData(locale), [locale]);
 
   const concept = kind === "concepts" ? findConceptBySlug(locale, slug) : null;
@@ -40,21 +42,10 @@ export function CatalogDetailClient({
               localeCopy={home.header}
               onLocaleChange={setLocale}
             />
-            <EssayDetailView
+            <ConceptDetailView
               backHref="/concepts"
               backLabel={locale === "zh-Hans" ? "首页 / 探索理念" : "首頁 / 探索理念"}
-              title={concept.title}
-              subtitle={concept.heroSubtitle}
-              summary={concept.summary}
-              heroImage={concept.image}
-              heroImageAlt={concept.title}
-              introLabel={concept.introLabel}
-              introBody={concept.introBody}
-              introMedia={concept.introMedia}
-              sections={concept.sections}
-              diagram={concept.diagram}
-              relatedObjects={concept.relatedObjects}
-              references={concept.references}
+              concept={concept}
             />
           </div>
         </PageContainer>

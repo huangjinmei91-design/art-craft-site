@@ -27,6 +27,7 @@ test("detail lookup helpers return localized entries by slug", () => {
   assert.equal(object?.title, "宋建窑兔毫茶盏");
   assert.equal(timeline?.title, "宋");
   assert.equal(glossary?.title, "窑变与兔毫纹");
+  assert.ok((concept?.sections.length ?? 0) >= 1);
 });
 
 test("imported objects from the single master csv are merged into the catalog content", () => {
@@ -62,4 +63,12 @@ test("detail lookup helpers return null for unknown slugs", () => {
   assert.equal(findObjectBySlug("zh-Hans", "missing"), null);
   assert.equal(findTimelineBySlug("zh-Hans", "missing"), null);
   assert.equal(findGlossaryBySlug("zh-Hans", "missing"), null);
+});
+
+test("concept related recommendations only include linked objects and are capped at four", () => {
+  const concept = findConceptBySlug("zh-Hans", "utility");
+
+  assert.ok(concept);
+  assert.ok(concept.relatedObjects.length <= 4);
+  assert.ok(concept.relatedObjects.every((item) => item.href.startsWith("/objects/")));
 });

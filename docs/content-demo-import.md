@@ -7,6 +7,7 @@
 - `object` 物件记录
 - `term / glossary` 延伸阅读词条
 - `term / concept` 探索理念词条
+- `home hero` 首页 Banner 轮播内容（通过 `term / concept` 行维护）
 - `timeline` 时代长廊记录
 
 并验证：
@@ -25,6 +26,7 @@
 - 它对应哪些理念，写在 `concept_slugs`
 - 它对应哪些延伸阅读词条，写在 `related_term_slugs`
 - glossary 和 concept 词条本身，写在 `record_type = term` 的行里
+- 首页 Banner 的三张轮播，也从 `record_type = term` 且 `term_type = concept` 的行里读取
 
 ## 你要编辑的文件
 
@@ -78,6 +80,18 @@
     - `zen`
     - `utility`
   - 它会决定这个物件和哪些理念页关联。
+- `首页 Banner`
+  - 当前首页 Banner 读取 3 个固定概念 slug，对应顺序是：
+    - `utility` → `格物致用`
+    - `fusion` → `融合多元`
+    - `harmony` → `天人合一`
+  - 这些内容都在 `record_type = term` 且 `term_type = concept` 的行里维护。
+  - 其中：
+    - `title_zh_hans` = Banner 大标题
+    - `hero_subtitle_zh_hans` = Banner 副标题
+    - `hero_image` = Banner 图片
+    - `slug` = Banner 点击后跳转到的概念页 `/concepts/<slug>`
+  - 也就是说，Banner 现在是可点击的，点击后进入对应概念页。
 
 - `featured_on_home`
   - `true` 表示可进入首页“浏览物件”
@@ -90,10 +104,63 @@
   - 例如：`瓷器||黑釉瓷||建盏`
   - 如果留空，系统会回退到 `material_zh_hans`。
 - `hero_image`
-  - 当前先使用站内现有图片路径，例如：
+  - 对 object / concept / timeline 而言，这都是对应记录的主图字段。
+  - Banner 轮播读取 concept 行里的 `hero_image`。
+  - 当前可先使用站内现有图片路径，例如：
     - `/images/hero-celadon-bowl.svg`
     - `/images/object-bronze-tray.svg`
     - `/images/object-tea-bowl.svg`
+  - 首页 Banner 的正式图片建议统一放在：
+    - `public/images/home/hero/`
+  - 推荐命名：
+    - `utility-banner.png`
+    - `fusion-banner.png`
+    - `harmony-banner.png`
+  - 对应 CSV 中填写的网站路径：
+    - `/images/home/hero/utility-banner.png`
+    - `/images/home/hero/fusion-banner.png`
+    - `/images/home/hero/harmony-banner.png`
+- `探索理念详情页`
+  - 理念详情页现在采用固定结构，且和首页理念卡片、首页 Banner 使用同一条 `term / concept` 记录联动。
+  - 也就是说，你只维护 `record_type = term` 且 `term_type = concept` 这一行，首页和详情页会一起更新。
+  - 页面从上到下对应这些字段：
+    - 固定 Banner
+      - `title_zh_hans` = 页面主标题
+      - `hero_subtitle_zh_hans` = Banner 副标题
+      - `hero_image` = Banner 图片
+    - 理念简述
+      - `intro_label_zh_hans` = 建议填 `理念简述`
+      - `intro_body_zh_hans` = 正文，多段用 `||`
+    - 文化源流
+      - `section_1_heading_zh_hans` = 建议填 `文化源流`
+      - `section_1_body_zh_hans` = 正文，多段用 `||`
+      - `section_1_image_1` 到 `section_1_image_4` = 右侧图片，支持 `1-4` 张
+      - `section_1_image_1_caption_zh_hans` 到 `section_1_image_4_caption_zh_hans` = 对应图片标题，可留空
+    - 理蕴于形
+      - `section_2_heading_zh_hans` = 建议填 `理蕴于形`
+      - `section_2_body_zh_hans` = 正文，多段用 `||`
+      - `section_2_image_1` = 这一段正文下方的大图
+      - `section_2_image_1_caption_zh_hans` = 大图标题，可留空
+    - 相关推荐
+      - 不需要单独填写推荐列表
+      - 系统会自动从 `object` 记录中找出 `concept_slugs` 包含当前理念 slug 的物件，最多显示 `4` 个
+    - 参考文献
+      - `reference_labels_zh_hans`
+      - `reference_hrefs`
+  - 推荐图片目录：
+    - `public/images/concepts/<slug>/banner.png`
+    - `public/images/concepts/<slug>/source-01.png`
+    - `public/images/concepts/<slug>/source-02.png`
+    - `public/images/concepts/<slug>/source-03.png`
+    - `public/images/concepts/<slug>/source-04.png`
+    - `public/images/concepts/<slug>/form-01.png`
+  - 对应 CSV 中建议写成：
+    - `hero_image = /images/concepts/<slug>/banner.png`
+    - `section_1_image_1 = /images/concepts/<slug>/source-01.png`
+    - `section_1_image_2 = /images/concepts/<slug>/source-02.png`
+    - `section_1_image_3 = /images/concepts/<slug>/source-03.png`
+    - `section_1_image_4 = /images/concepts/<slug>/source-04.png`
+    - `section_2_image_1 = /images/concepts/<slug>/form-01.png`
 - `related_object_slugs`
   - 填已存在的物件 slug，多个值用 `||`
   - 这是“相关推荐”的手动优先级入口。
@@ -128,6 +195,11 @@
   - 工艺品鉴图
 - `culture_image_1`
   - 文化解读图
+
+补充：
+
+- concept 行中的 `hero_image`
+  - 同时可以驱动概念页主图与首页 Banner 图
 
 更直观的说明见：
 

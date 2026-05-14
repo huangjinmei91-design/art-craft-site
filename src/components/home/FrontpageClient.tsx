@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -11,14 +11,32 @@ import { TimelineCard } from "@/components/home/TimelineCard";
 import {
   buildSearchEntries,
   getHomePageData,
-  type Locale
+  selectHomepageObjectCards,
 } from "@/data/home";
 import styles from "@/components/home/Frontpage.module.css";
+import { usePreferredLocale } from "@/components/usePreferredLocale";
 
 export function FrontpageClient() {
-  const [locale, setLocale] = useState<Locale>("zh-Hans");
+  const [locale, setLocale] = usePreferredLocale("zh-Hans");
+  const [objectSeed, setObjectSeed] = useState<number>(0);
   const pageData = useMemo(() => getHomePageData(locale), [locale]);
+  const objectCards = useMemo(
+    () => selectHomepageObjectCards(pageData.objectCards, objectSeed, 6),
+    [objectSeed, pageData.objectCards]
+  );
   const searchEntries = useMemo(() => buildSearchEntries(pageData), [pageData]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || objectSeed !== 0) {
+      return;
+    }
+
+    const randomSeed = window.crypto?.getRandomValues
+      ? window.crypto.getRandomValues(new Uint32Array(1))[0] ?? 1
+      : Math.floor(Math.random() * 1_000_000_000);
+
+    setObjectSeed(randomSeed || 1);
+  }, [objectSeed]);
 
   return (
     <main className={styles.page}>
@@ -57,7 +75,7 @@ export function FrontpageClient() {
               href={pageData.sections.objects.href}
             />
             <div className={styles.threeColumnGrid}>
-              {pageData.objectCards.map((card) => (
+              {objectCards.map((card) => (
                 <ObjectCard key={card.title} card={card} />
               ))}
             </div>
