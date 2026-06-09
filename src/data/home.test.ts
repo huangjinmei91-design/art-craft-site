@@ -52,10 +52,10 @@ test("getHomePageData returns traditional Chinese copy when requested", () => {
 
 test("buildSearchEntries and filterSearchEntries keep homepage discovery on valid routes", () => {
   const searchEntries = buildSearchEntries(getHomePageData("zh-Hans"));
-  const matches = filterSearchEntries(searchEntries, "茶盏");
+  const matches = filterSearchEntries(searchEntries, "兔毫");
 
   assert.ok(matches.length > 0);
-  assert.ok(matches.some((entry) => entry.href === "/objects/tea-bowl"));
+  assert.ok(matches.some((entry) => entry.href === "/objects/song-jianyangheiyoutuhao-zhan"));
 });
 
 test("selectHomepageObjectCards returns six unique cards in a seeded order", () => {

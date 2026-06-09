@@ -1501,10 +1501,9 @@ const baseObjectSeeds: ObjectSeed[] = [
   }
 ];
 
-const objectSeeds: ObjectSeed[] = dedupeObjectSeeds([
-  ...buildImportedObjectSeeds(),
-  ...baseObjectSeeds
-]);
+const importedObjectSeeds = dedupeObjectSeeds(buildImportedObjectSeeds());
+const objectSeeds: ObjectSeed[] =
+  importedObjectSeeds.length > 0 ? importedObjectSeeds : baseObjectSeeds;
 
 function getDerivedRelatedObjectSlugs(entry: ObjectSeed): string[] {
   const seen = new Set<string>([entry.slug, ...entry.relatedObjectSlugs]);
@@ -1546,7 +1545,9 @@ function getRelatedObjectCards(
     }
 
     seen.add(slug);
-    return [getObjectCard(locale, slug)];
+
+    const card = getObjectCard(locale, slug);
+    return card ? [card] : [];
   }).slice(0, limit);
 }
 
@@ -2475,11 +2476,11 @@ function getRelatedTermLinks(locale: Locale, slugs: string[]): RelatedTermLink[]
   });
 }
 
-function getObjectCard(locale: Locale, slug: string): RelatedCard {
+function getObjectCard(locale: Locale, slug: string): RelatedCard | null {
   const seed = objectSeeds.find((entry) => entry.slug === slug);
 
   if (!seed) {
-    throw new Error(`Missing related object seed: ${slug}`);
+    return null;
   }
 
   return {
@@ -2613,7 +2614,7 @@ export function getCatalogContent(locale: Locale): CatalogContent {
         title: localizeText(locale, entry.video.title),
         image: entry.video.image
       },
-      relatedObjects: entry.relatedObjectSlugs.map((slug) => getObjectCard(locale, slug)),
+      relatedObjects: getRelatedObjectCards(locale, entry.relatedObjectSlugs, []),
       references: localizeReferences(locale, entry.references),
       href: `/glossary/${entry.slug}`
     }))
