@@ -13,6 +13,7 @@
 .content {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
+  align-items: start;
   gap: 28px;
   padding: 24px;
 }
@@ -69,11 +70,13 @@
 
 .resultsColumn {
   display: grid;
+  align-content: start;
   gap: 20px;
 }
 
 .searchToolbar {
   display: grid;
+  align-content: start;
   gap: 18px;
 }
 
@@ -89,17 +92,24 @@
 .sortChips {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
 }
 
 .sortChip,
 .sortChipActive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 8px 12px;
   background: white;
   color: var(--ink-soft);
+  line-height: 1.2;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .sortChipActive {
