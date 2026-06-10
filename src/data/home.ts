@@ -208,7 +208,7 @@ function createHomePageContent(locale: Locale): HomePageData {
       subtitle: entry.summary,
       periodLabel: entry.periodLabel,
       homeCaptionLines: entry.homeCaptionLines ?? [],
-      image: entry.image,
+      image: entry.homeImage || entry.image,
       href: entry.href
     }))
   };

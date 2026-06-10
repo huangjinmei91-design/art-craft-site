@@ -1,5 +1,71 @@
 import type { GlossaryEntry } from "@/data/catalog";
+import { ReferenceList } from "./ReferenceList";
 import styles from "./CatalogPage.module.css";
+
+function NarrativeSection({
+  heading,
+  body,
+  figure,
+  reverse
+}: {
+  heading: string;
+  body: string[];
+  figure?: GlossaryEntry["introMedia"][number];
+  reverse?: boolean;
+}) {
+  if (body.length === 0 && !figure) {
+    return null;
+  }
+
+  return (
+    <section className={styles.section}>
+      <div className={styles.sectionHeadingRow}>
+        <h2 className={styles.sectionHeading}>{heading}</h2>
+      </div>
+      <div
+        className={
+          reverse
+            ? `${styles.glossaryNarrativeGrid} ${styles.glossaryNarrativeGridReverse}`
+            : styles.glossaryNarrativeGrid
+        }
+      >
+        {reverse ? (
+          <>
+            {figure ? (
+              <figure className={styles.glossaryNarrativeFigure}>
+                <img src={figure.image} alt={figure.alt} />
+                {figure.caption ? <figcaption>{figure.caption}</figcaption> : null}
+              </figure>
+            ) : null}
+            {body.length > 0 ? (
+              <div className={styles.longformText}>
+                {body.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <>
+            {body.length > 0 ? (
+              <div className={styles.longformText}>
+                {body.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            ) : null}
+            {figure ? (
+              <figure className={styles.glossaryNarrativeFigure}>
+                <img src={figure.image} alt={figure.alt} />
+                {figure.caption ? <figcaption>{figure.caption}</figcaption> : null}
+              </figure>
+            ) : null}
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
 
 export function GlossaryDetailView({
   backHref,
@@ -16,47 +82,29 @@ export function GlossaryDetailView({
         <div className={styles.breadcrumbs}>
           <a href={backHref}>{backLabel}</a>
         </div>
-        <div className={styles.glossaryIntroGrid}>
-          <div>
-            <h1 className={styles.objectTitle}>{entry.title}</h1>
-            <p className={styles.detailSummary}>{entry.summary}</p>
-          </div>
-          <div className={styles.longformText}>
-            {entry.intro.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
+        <div className={styles.glossaryDetailHero}>
+          <h1 className={styles.objectTitle}>{entry.title}</h1>
+          {entry.summary ? <p className={styles.detailSummary}>{entry.summary}</p> : null}
         </div>
       </section>
 
-      <section className={styles.section}>
-        <div className={styles.glossarySteps}>
-          {entry.steps.map((step) => (
-            <article key={step.title} className={styles.glossaryStep}>
-              <div className={styles.glossaryStepImage}>
-                <img src={step.image} alt={step.title} />
-              </div>
-              <div className={styles.glossaryStepCopy}>
-                <h2 className={styles.sectionHeading}>{step.title}</h2>
-                <p>{step.body}</p>
-              </div>
-            </article>
-          ))}
-        </div>
+      <NarrativeSection
+        heading={entry.introLabel || "简介"}
+        body={entry.introBody}
+        figure={entry.introMedia[0]}
+      />
 
-        <aside className={styles.videoCard}>
-          <img src={entry.video.image} alt={entry.video.title} />
-          <div className={styles.videoOverlay}>
-            <span className={styles.videoPlay}>▶</span>
-            <span>{entry.video.title}</span>
-          </div>
-        </aside>
-      </section>
+      <NarrativeSection
+        heading={entry.historyLabel || "历史发展"}
+        body={entry.historyBody}
+        figure={entry.historyMedia[0]}
+        reverse
+      />
 
       {entry.relatedObjects.length > 0 ? (
         <section className={styles.section}>
           <div className={styles.sectionHeadingRow}>
-            <h2 className={styles.sectionHeading}>相关物件</h2>
+            <h2 className={styles.sectionHeading}>相关推荐</h2>
           </div>
           <div className={styles.relatedGrid}>
             {entry.relatedObjects.map((item) => (
@@ -77,15 +125,7 @@ export function GlossaryDetailView({
           <div className={styles.sectionHeadingRow}>
             <h2 className={styles.sectionHeading}>参考文献</h2>
           </div>
-          <ol className={styles.referenceList}>
-            {entry.references.map((item) => (
-              <li key={item.href}>
-                <a href={item.href} target="_blank" rel="noreferrer">
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ol>
+          <ReferenceList references={entry.references} />
         </section>
       ) : null}
     </>

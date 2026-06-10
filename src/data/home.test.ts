@@ -30,6 +30,10 @@ test("homePageData provides the frontpage sections needed by the homepage", () =
   assert.ok(homePageData.objectCards.length >= 6);
   assert.ok(homePageData.timelineItems.length >= 5);
   assert.equal(homePageData.sections.timeline.actionLabel, "进入时代长廊");
+  assert.deepEqual(
+    homePageData.timelineItems.map((item) => item.title),
+    ["汉", "唐", "宋", "明", "清"]
+  );
 
   assert.equal(typeof homePageData.heroSlides[0].title, "string");
   assert.equal(typeof homePageData.heroSlides[0].subtitle, "string");

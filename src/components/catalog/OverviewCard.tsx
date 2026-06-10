@@ -15,7 +15,7 @@ export function OverviewCard({
   href: string;
   meta?: string;
   ctaLabel: string;
-  variant?: "default" | "conceptIndex";
+  variant?: "default" | "conceptIndex" | "timelinePanel";
 }) {
   return (
     <a
@@ -23,25 +23,31 @@ export function OverviewCard({
       className={
         variant === "conceptIndex"
           ? `${styles.overviewCard} ${styles.conceptOverviewCard}`
-          : styles.overviewCard
+          : variant === "timelinePanel"
+            ? `${styles.overviewCard} ${styles.timelineOverviewCard}`
+            : styles.overviewCard
       }
     >
       <div
         className={
           variant === "conceptIndex"
             ? `${styles.overviewImage} ${styles.conceptOverviewImage}`
-            : styles.overviewImage
+            : variant === "timelinePanel"
+              ? `${styles.overviewImage} ${styles.timelineOverviewImage}`
+              : styles.overviewImage
         }
       >
         <img src={image} alt={title} />
       </div>
-      {meta ? <div className={styles.overviewMeta}>{meta}</div> : null}
-      <h2 className={styles.overviewTitle}>{title}</h2>
-      {summary ? <p className={styles.overviewSummary}>{summary}</p> : null}
-      <span className={styles.overviewCta}>
-        {ctaLabel}
-        <span aria-hidden="true">→</span>
-      </span>
+      <div className={styles.overviewCopy}>
+        {meta ? <div className={styles.overviewMeta}>{meta}</div> : null}
+        <h2 className={styles.overviewTitle}>{title}</h2>
+        {summary ? <p className={styles.overviewSummary}>{summary}</p> : null}
+        <span className={styles.overviewCta}>
+          {ctaLabel}
+          <span aria-hidden="true">→</span>
+        </span>
+      </div>
     </a>
   );
 }

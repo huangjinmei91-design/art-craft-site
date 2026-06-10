@@ -11,7 +11,7 @@ type MediaSeed = {
 
 type ReferenceSeed = {
   label: LocalizedText;
-  href: string;
+  href?: string;
 };
 
 type EssaySectionSeed = {
@@ -41,7 +41,7 @@ export type MediaItem = {
 
 export type ReferenceItem = {
   label: string;
-  href: string;
+  href?: string;
 };
 
 export type CraftInsight = {
@@ -112,6 +112,7 @@ export type TimelineEntry = {
   periodLabel: string;
   years: string;
   homeCaptionLines: string[];
+  homeImage: string;
   image: string;
   summary: string;
   heroSubtitle: string;
@@ -129,16 +130,12 @@ export type GlossaryEntry = {
   slug: string;
   title: string;
   summary: string;
-  intro: string[];
-  steps: Array<{
-    title: string;
-    body: string;
-    image: string;
-  }>;
-  video: {
-    title: string;
-    image: string;
-  };
+  introLabel: string;
+  introBody: string[];
+  introMedia: MediaItem[];
+  historyLabel: string;
+  historyBody: string[];
+  historyMedia: MediaItem[];
   relatedObjects: RelatedCard[];
   references: ReferenceItem[];
   href: string;
@@ -209,6 +206,7 @@ type TimelineSeed = {
   periodLabel: LocalizedText;
   years: LocalizedText;
   homeCaptionLines: LocalizedText[];
+  homeImage: string;
   image: string;
   summary: LocalizedText;
   heroSubtitle: LocalizedText;
@@ -225,16 +223,12 @@ type GlossarySeed = {
   slug: string;
   title: LocalizedText;
   summary: LocalizedText;
-  intro: LocalizedText[];
-  steps: Array<{
-    title: LocalizedText;
-    body: LocalizedText;
-    image: string;
-  }>;
-  video: {
-    title: LocalizedText;
-    image: string;
-  };
+  introLabel: LocalizedText;
+  introBody: LocalizedText[];
+  introMedia: MediaSeed[];
+  historyLabel: LocalizedText;
+  historyBody: LocalizedText[];
+  historyMedia: MediaSeed[];
   relatedObjectSlugs: string[];
   references: ReferenceSeed[];
 };
@@ -246,6 +240,7 @@ function inferEraSlug(value: string): string {
     return "";
   }
 
+  if (value.includes("汉")) return "han";
   if (value.includes("唐")) return "tang";
   if (value.includes("宋")) return "song";
   if (value.includes("元")) return "yuan";
@@ -339,6 +334,30 @@ function localizeReferences(locale: Locale, values: ReferenceSeed[]): ReferenceI
     label: localizeText(locale, value.label),
     href: value.href
   }));
+}
+
+function buildReferenceSeeds(
+  referenceLabelsHans: string[],
+  referenceLabelsHant: string[],
+  referenceHrefs: string[]
+): ReferenceSeed[] {
+  if (referenceLabelsHans.length === 0 && referenceHrefs.length === 0) {
+    return [];
+  }
+
+  const total = Math.max(referenceLabelsHans.length, referenceHrefs.length);
+
+  return Array.from({ length: total }, (_, index) => {
+    const href = referenceHrefs[index] ?? "";
+
+    return {
+      label: createLocalizedText(
+        referenceLabelsHans[index] ?? href,
+        referenceLabelsHant[index] ?? ""
+      ),
+      href: href || undefined
+    };
+  });
 }
 
 function localizeSections(locale: Locale, values: EssaySectionSeed[]): EssaySection[] {
@@ -459,10 +478,7 @@ function buildImportedObjectSeeds(): ObjectSeed[] {
           ? `/concepts/${splitField(getRowValue(row, "concept_slugs"))[0]}`
           : "/concepts/utility"),
       relatedObjectSlugs: splitField(getRowValue(row, "related_object_slugs")),
-      references: referenceHrefs.map((href, index) => ({
-        label: createLocalizedText(referenceLabelsHans[index] ?? href, referenceLabelsHant[index] ?? ""),
-        href
-      })),
+      references: buildReferenceSeeds(referenceLabelsHans, referenceLabelsHant, referenceHrefs),
       search: {
         colors: colorHans.map((item, index) =>
           createLocalizedText(item, colorHant[index] ?? "")
@@ -583,7 +599,13 @@ function buildImportedConceptSeeds(): EssaySeed[] {
                 alt: createLocalizedText(
                   getRowValue(row, "title_zh_hans"),
                   getRowValue(row, "title_zh_hant")
-                )
+                ),
+                caption: getRowValue(row, "intro_image_1_caption_zh_hans")
+                  ? createLocalizedText(
+                      getRowValue(row, "intro_image_1_caption_zh_hans"),
+                      getRowValue(row, "intro_image_1_caption_zh_hant")
+                    )
+                  : undefined
               }
             ]
           : [],
@@ -618,10 +640,7 @@ function buildImportedConceptSeeds(): EssaySeed[] {
             : [])
         ],
         relatedObjectSlugs: splitField(getRowValue(row, "related_object_slugs")),
-        references: referenceHrefs.map((href, index) => ({
-          label: createLocalizedText(referenceLabelsHans[index] ?? href, referenceLabelsHant[index] ?? ""),
-          href
-        })),
+        references: buildReferenceSeeds(referenceLabelsHans, referenceLabelsHant, referenceHrefs),
         featuredOnHome: getRowValue(row, "featured_on_home").toLowerCase() === "true"
       };
     });
@@ -638,8 +657,50 @@ function buildImportedGlossarySeeds(): GlossarySeed[] {
       const referenceLabelsHans = splitField(getRowValue(row, "reference_labels_zh_hans"));
       const referenceLabelsHant = splitField(getRowValue(row, "reference_labels_zh_hant"));
       const referenceHrefs = splitField(getRowValue(row, "reference_hrefs"));
-      const introHans = splitField(getRowValue(row, "intro_body_zh_hans"));
-      const introHant = splitField(getRowValue(row, "intro_body_zh_hant"));
+      const introBodyHans = splitField(getRowValue(row, "intro_body_zh_hans"));
+      const introBodyHant = splitField(getRowValue(row, "intro_body_zh_hant"));
+      const historyBodyHans = splitField(
+        getRowValue(row, "section_1_body_zh_hans") || getRowValue(row, "glossary_step_1_body_zh_hans")
+      );
+      const historyBodyHant = splitField(
+        getRowValue(row, "section_1_body_zh_hant") || getRowValue(row, "glossary_step_1_body_zh_hant")
+      );
+      const introMedia = getRowValue(row, "intro_image_1")
+        ? [
+            {
+              image: getRowValue(row, "intro_image_1"),
+              alt: createLocalizedText(
+                getRowValue(row, "title_zh_hans"),
+                getRowValue(row, "title_zh_hant")
+              ),
+              caption: getRowValue(row, "intro_image_1_caption_zh_hans")
+                ? createLocalizedText(
+                    getRowValue(row, "intro_image_1_caption_zh_hans"),
+                    getRowValue(row, "intro_image_1_caption_zh_hant")
+                  )
+                : undefined
+            }
+          ]
+        : [];
+      const historyMediaSource =
+        getRowValue(row, "section_1_image_1") || getRowValue(row, "glossary_step_1_image");
+      const historyMedia = historyMediaSource
+        ? [
+            {
+              image: historyMediaSource,
+              alt: createLocalizedText(
+                getRowValue(row, "title_zh_hans"),
+                getRowValue(row, "title_zh_hant")
+              ),
+              caption: getRowValue(row, "section_1_image_1_caption_zh_hans")
+                ? createLocalizedText(
+                    getRowValue(row, "section_1_image_1_caption_zh_hans"),
+                    getRowValue(row, "section_1_image_1_caption_zh_hant")
+                  )
+                : undefined
+            }
+          ]
+        : [];
 
       return {
         slug: getRowValue(row, "slug"),
@@ -651,45 +712,27 @@ function buildImportedGlossarySeeds(): GlossarySeed[] {
           getRowValue(row, "summary_zh_hans"),
           getRowValue(row, "summary_zh_hant")
         ),
-        intro: introHans.map((item, index) =>
-          createLocalizedText(item, introHant[index] ?? "")
+        introLabel: createLocalizedText(
+          getRowValue(row, "intro_label_zh_hans") || "简介",
+          getRowValue(row, "intro_label_zh_hant")
         ),
-        steps:
-          getRowValue(row, "glossary_step_1_title_zh_hans") ||
-          getRowValue(row, "glossary_step_1_body_zh_hans") ||
-          getRowValue(row, "glossary_step_1_image")
-            ? [
-                {
-                  title: createLocalizedText(
-                    getRowValue(row, "glossary_step_1_title_zh_hans") || "词条展开",
-                    getRowValue(row, "glossary_step_1_title_zh_hant")
-                  ),
-                  body: createLocalizedText(
-                    getRowValue(row, "glossary_step_1_body_zh_hans"),
-                    getRowValue(row, "glossary_step_1_body_zh_hant")
-                  ),
-                  image:
-                    getRowValue(row, "glossary_step_1_image") ||
-                    getRowValue(row, "intro_image_1") ||
-                    "/images/video-kiln.svg"
-                }
-              ]
-            : [],
-        video: {
-          title: createLocalizedText(
-            getRowValue(row, "video_title_zh_hans") || "延伸影像",
-            getRowValue(row, "video_title_zh_hant")
-          ),
-          image:
-            getRowValue(row, "video_image") ||
-            getRowValue(row, "hero_image") ||
-            "/images/video-kiln.svg"
-        },
+        introBody: introBodyHans.map((item, index) =>
+          createLocalizedText(item, introBodyHant[index] ?? "")
+        ),
+        introMedia,
+        historyLabel: createLocalizedText(
+          getRowValue(row, "section_1_heading_zh_hans") ||
+            getRowValue(row, "glossary_step_1_title_zh_hans") ||
+            "历史发展",
+          getRowValue(row, "section_1_heading_zh_hant") ||
+            getRowValue(row, "glossary_step_1_title_zh_hant")
+        ),
+        historyBody: historyBodyHans.map((item, index) =>
+          createLocalizedText(item, historyBodyHant[index] ?? "")
+        ),
+        historyMedia,
         relatedObjectSlugs: splitField(getRowValue(row, "related_object_slugs")),
-        references: referenceHrefs.map((href, index) => ({
-          label: createLocalizedText(referenceLabelsHans[index] ?? href, referenceLabelsHant[index] ?? ""),
-          href
-        }))
+        references: buildReferenceSeeds(referenceLabelsHans, referenceLabelsHant, referenceHrefs)
       };
     });
 }
@@ -730,6 +773,7 @@ function buildImportedTimelineSeeds(): TimelineSeed[] {
             getRowValue(row, "home_caption_line_2_zh_hant")
           )
         ].filter((value) => value["zh-Hans"]),
+        homeImage: getRowValue(row, "home_image") || getRowValue(row, "hero_image"),
         image: getRowValue(row, "hero_image"),
         summary: createLocalizedText(
           getRowValue(row, "summary_zh_hans"),
@@ -753,7 +797,13 @@ function buildImportedTimelineSeeds(): TimelineSeed[] {
                 alt: createLocalizedText(
                   getRowValue(row, "title_zh_hans"),
                   getRowValue(row, "title_zh_hant")
-                )
+                ),
+                caption: getRowValue(row, "intro_image_1_caption_zh_hans")
+                  ? createLocalizedText(
+                      getRowValue(row, "intro_image_1_caption_zh_hans"),
+                      getRowValue(row, "intro_image_1_caption_zh_hant")
+                    )
+                  : undefined
               }
             ]
           : [],
@@ -783,10 +833,7 @@ function buildImportedTimelineSeeds(): TimelineSeed[] {
               ]
             : [],
         relatedObjectSlugs: splitField(getRowValue(row, "related_object_slugs")),
-        references: referenceHrefs.map((href, index) => ({
-          label: createLocalizedText(referenceLabelsHans[index] ?? href, referenceLabelsHant[index] ?? ""),
-          href
-        })),
+        references: buildReferenceSeeds(referenceLabelsHans, referenceLabelsHant, referenceHrefs),
         featuredOnHome: getRowValue(row, "featured_on_home").toLowerCase() === "true"
       };
     });
@@ -1286,7 +1333,7 @@ const baseObjectSeeds: ObjectSeed[] = [
   },
   {
     slug: "lamp-stand",
-    eraSlug: "yuan",
+    eraSlug: "tang",
     materialSlug: "metalwork",
     objectKindSlug: "stand",
     conceptSlugs: ["fusion"],
@@ -1893,6 +1940,64 @@ const conceptSeeds: EssaySeed[] = dedupeEssaySeeds([
 
 const baseTimelineSeeds: TimelineSeed[] = [
   {
+    slug: "han",
+    title: {
+      "zh-Hans": "汉",
+      "zh-Hant": "漢"
+    },
+    periodLabel: {
+      "zh-Hans": "汉",
+      "zh-Hant": "漢"
+    },
+    years: {
+      "zh-Hans": "",
+      "zh-Hant": ""
+    },
+    homeCaptionLines: [
+      {
+        "zh-Hans": "丰富博大",
+        "zh-Hant": "豐富博大"
+      },
+      {
+        "zh-Hans": "文质相配",
+        "zh-Hant": "文質相配"
+      }
+    ],
+    homeImage: "/images/timeline/han/home.png",
+    image: "/images/timeline/han/hero.png",
+    summary: {
+      "zh-Hans": "汉代工艺以丰富博大的气象、礼制秩序与实用精神并行，奠定了后世许多器用传统的基础。",
+      "zh-Hant": "漢代工藝以豐富博大的氣象、禮制秩序與實用精神並行，奠定了後世許多器用傳統的基礎。"
+    },
+    heroSubtitle: {
+      "zh-Hans": "丰富博大 · 文质相配",
+      "zh-Hant": "豐富博大 · 文質相配"
+    },
+    introLabel: {
+      "zh-Hans": "时代导览",
+      "zh-Hant": "時代導覽"
+    },
+    introBody: [
+      {
+        "zh-Hans": "汉代器物在礼制、日用与图像表达之间建立起稳定秩序，为中国早期工艺体系留下了深厚底色。",
+        "zh-Hant": "漢代器物在禮制、日用與圖像表達之間建立起穩定秩序，為中國早期工藝體系留下了深厚底色。"
+      }
+    ],
+    introMedia: [
+      {
+        image: "/images/timeline/han/sum.png",
+        alt: {
+          "zh-Hans": "汉代相关图像",
+          "zh-Hant": "漢代相關圖像"
+        }
+      }
+    ],
+    sections: [],
+    relatedObjectSlugs: [],
+    references: [],
+    featuredOnHome: true
+  },
+  {
     slug: "tang",
     title: {
       "zh-Hans": "唐",
@@ -1916,6 +2021,7 @@ const baseTimelineSeeds: TimelineSeed[] = [
         "zh-Hant": "融合多元"
       }
     ],
+    homeImage: "/images/timeline-tang.svg",
     image: "/images/timeline-tang.svg",
     summary: {
       "zh-Hans": "开放交流与昂扬审美并行，使工艺语言呈现出饱满、外放与兼容并蓄的气质。",
@@ -1993,6 +2099,7 @@ const baseTimelineSeeds: TimelineSeed[] = [
         "zh-Hant": "格物致用"
       }
     ],
+    homeImage: "/images/hero-celadon-bowl.svg",
     image: "/images/hero-celadon-bowl.svg",
     summary: {
       "zh-Hans": "更克制的形式、更精密的比例意识和更内敛的色调，使宋代成为“格物致用”的核心样本。",
@@ -2054,63 +2161,6 @@ const baseTimelineSeeds: TimelineSeed[] = [
     featuredOnHome: true
   },
   {
-    slug: "yuan",
-    title: {
-      "zh-Hans": "元",
-      "zh-Hant": "元"
-    },
-    periodLabel: {
-      "zh-Hans": "大元",
-      "zh-Hant": "大元"
-    },
-    years: {
-      "zh-Hans": "1271 - 1368",
-      "zh-Hant": "1271 - 1368"
-    },
-    homeCaptionLines: [
-      {
-        "zh-Hans": "豪迈纵横",
-        "zh-Hant": "豪邁縱橫"
-      },
-      {
-        "zh-Hans": "兼收并蓄",
-        "zh-Hant": "兼收並蓄"
-      }
-    ],
-    image: "/images/timeline-yuan.svg",
-    summary: {
-      "zh-Hans": "跨地域统合让材料、图像和技术交流更直接，形成兼具力量感与流动性的视觉面貌。",
-      "zh-Hant": "跨地域統合讓材料、圖像和技術交流更直接，形成兼具力量感與流動性的視覺面貌。"
-    },
-    heroSubtitle: {
-      "zh-Hans": "结构力量 · 草原视野",
-      "zh-Hant": "結構力量 · 草原視野"
-    },
-    introLabel: {
-      "zh-Hans": "时代导览",
-      "zh-Hant": "時代導覽"
-    },
-    introBody: [
-      {
-        "zh-Hans": "元代的广域统合使图像与材料的流动更直接，装饰更强调节奏与速度。",
-        "zh-Hant": "元代的廣域統合使圖像與材料的流動更直接，裝飾更強調節奏與速度。"
-      }
-    ],
-    introMedia: [
-      {
-        image: "/images/timeline-yuan.svg",
-        alt: {
-          "zh-Hans": "元代图像示意",
-          "zh-Hant": "元代圖像示意"
-        }
-      }
-    ],
-    sections: [],
-    relatedObjectSlugs: ["lamp-stand"],
-    references: [],
-    featuredOnHome: true
-  },
-  {
     slug: "ming",
     title: {
       "zh-Hans": "明",
@@ -2134,6 +2184,7 @@ const baseTimelineSeeds: TimelineSeed[] = [
         "zh-Hant": "文質相兼"
       }
     ],
+    homeImage: "/images/timeline-ming.svg",
     image: "/images/timeline-ming.svg",
     summary: {
       "zh-Hans": "礼制修整与生活品味同步发展，使典雅、适用与精工在同一套秩序中共存。",
@@ -2191,6 +2242,7 @@ const baseTimelineSeeds: TimelineSeed[] = [
         "zh-Hant": "規整精緻"
       }
     ],
+    homeImage: "/images/timeline-qing.svg",
     image: "/images/timeline-qing.svg",
     summary: {
       "zh-Hans": "复杂工艺、精密装饰与宫廷趣味叠加，使“繁而不乱”的高级感成为这一时期的重要命题。",
@@ -2290,7 +2342,11 @@ const glossarySeeds: GlossarySeed[] = dedupeGlossarySeeds([
       "zh-Hans": "建窑黑釉如何在高温中形成丝缕状结晶，是理解兔毫茶盏的关键工艺词条。",
       "zh-Hant": "建窯黑釉如何在高溫中形成絲縷狀結晶，是理解兔毫茶盞的關鍵工藝詞條。"
     },
-    intro: [
+    introLabel: {
+      "zh-Hans": "简介",
+      "zh-Hant": "簡介"
+    },
+    introBody: [
       {
         "zh-Hans": "所谓“兔毫纹”，并不是后期描摹的花纹，而是窑炉高温中釉层流动、析晶与冷却共同作用的结果。",
         "zh-Hant": "所謂「兔毫紋」，並不是後期描摹的花紋，而是窯爐高溫中釉層流動、析晶與冷卻共同作用的結果。"
@@ -2300,59 +2356,46 @@ const glossarySeeds: GlossarySeed[] = dedupeGlossarySeeds([
         "zh-Hant": "工匠需要同時控制胎土、釉料、火候和冷卻節奏，任何一個環節變化都可能讓紋理失控，因此這項工藝既依賴經驗，也依賴對材料反應的精準判斷。"
       }
     ],
-    steps: [
+    introMedia: [
       {
-        title: {
-          "zh-Hans": "配胎与施釉",
-          "zh-Hant": "配胎與施釉"
-        },
-        body: {
-          "zh-Hans": "含铁量较高的釉层覆盖在厚胎表面，为后续析晶提供基础条件。",
-          "zh-Hant": "含鐵量較高的釉層覆蓋在厚胎表面，為後續析晶提供基礎條件。"
-        },
-        image: "/images/process-kiln-1.svg"
-      },
-      {
-        title: {
-          "zh-Hans": "高温熔融",
-          "zh-Hant": "高溫熔融"
-        },
-        body: {
-          "zh-Hans": "窑温升高后，釉层开始强烈流动，铁质在液态表面聚集。",
-          "zh-Hant": "窯溫升高後，釉層開始強烈流動，鐵質在液態表面聚集。"
-        },
-        image: "/images/process-kiln-2.svg"
-      },
-      {
-        title: {
-          "zh-Hans": "析晶拉丝",
-          "zh-Hant": "析晶拉絲"
-        },
-        body: {
-          "zh-Hans": "温度回落时结晶逐渐析出，形成细长、带有方向性的“毫纹”。",
-          "zh-Hant": "溫度回落時結晶逐漸析出，形成細長、帶有方向性的「毫紋」。"
-        },
-        image: "/images/process-kiln-3.svg"
-      },
-      {
-        title: {
-          "zh-Hans": "冷却定型",
-          "zh-Hant": "冷卻定型"
-        },
-        body: {
-          "zh-Hans": "冷却速度决定纹理是否清晰稳定，也影响最终釉色的层次。",
-          "zh-Hant": "冷卻速度決定紋理是否清晰穩定，也影響最終釉色的層次。"
-        },
-        image: "/images/process-kiln-4.svg"
+        image: "/images/video-kiln.svg",
+        alt: {
+          "zh-Hans": "窑变与兔毫纹示意",
+          "zh-Hant": "窯變與兔毫紋示意"
+        }
       }
     ],
-    video: {
-      title: {
-        "zh-Hans": "建窑烧成过程示意",
-        "zh-Hant": "建窯燒成過程示意"
-      },
-      image: "/images/video-kiln.svg"
+    historyLabel: {
+      "zh-Hans": "工艺过程",
+      "zh-Hant": "工藝過程"
     },
+    historyBody: [
+      {
+        "zh-Hans": "含铁量较高的釉层覆盖在厚胎表面，为后续析晶提供基础条件。",
+        "zh-Hant": "含鐵量較高的釉層覆蓋在厚胎表面，為後續析晶提供基礎條件。"
+      },
+      {
+        "zh-Hans": "窑温升高后，釉层开始强烈流动，铁质在液态表面聚集。",
+        "zh-Hant": "窯溫升高後，釉層開始強烈流動，鐵質在液態表面聚集。"
+      },
+      {
+        "zh-Hans": "温度回落时结晶逐渐析出，形成细长、带有方向性的“毫纹”。",
+        "zh-Hant": "溫度回落時結晶逐漸析出，形成細長、帶有方向性的「毫紋」。"
+      },
+      {
+        "zh-Hans": "冷却速度决定纹理是否清晰稳定，也影响最终釉色的层次。",
+        "zh-Hant": "冷卻速度決定紋理是否清晰穩定，也影響最終釉色的層次。"
+      }
+    ],
+    historyMedia: [
+      {
+        image: "/images/process-kiln-2.svg",
+        alt: {
+          "zh-Hans": "建窑烧成过程示意",
+          "zh-Hant": "建窯燒成過程示意"
+        }
+      }
+    ],
     relatedObjectSlugs: ["tea-bowl", "white-bowl"],
     references: [
       {
@@ -2374,65 +2417,56 @@ const glossarySeeds: GlossarySeed[] = dedupeGlossarySeeds([
       "zh-Hans": "金属器表面起伏纹样如何被一点点敲击出来，是理解唐代金工的重要工艺词条。",
       "zh-Hant": "金屬器表面起伏紋樣如何被一點點敲擊出來，是理解唐代金工的重要工藝詞條。"
     },
-    intro: [
+    introLabel: {
+      "zh-Hans": "简介",
+      "zh-Hant": "簡介"
+    },
+    introBody: [
       {
         "zh-Hans": "錾刻与锤揲常常配合使用：前者处理线条与局部纹样，后者负责让整体表面起伏成形。",
         "zh-Hant": "鏨刻與錘揲常常配合使用：前者處理線條與局部紋樣，後者負責讓整體表面起伏成形。"
       }
     ],
-    steps: [
+    introMedia: [
       {
-        title: {
-          "zh-Hans": "起稿",
-          "zh-Hant": "起稿"
-        },
-        body: {
-          "zh-Hans": "先在金属片表面定出主要纹样和边界。",
-          "zh-Hant": "先在金屬片表面定出主要紋樣和邊界。"
-        },
-        image: "/images/process-metal-1.svg"
-      },
-      {
-        title: {
-          "zh-Hans": "锤揲起伏",
-          "zh-Hant": "錘揲起伏"
-        },
-        body: {
-          "zh-Hans": "从背面反复敲击，使图案产生浮雕般的起伏。",
-          "zh-Hant": "從背面反覆敲擊，使圖案產生浮雕般的起伏。"
-        },
-        image: "/images/process-metal-2.svg"
-      },
-      {
-        title: {
-          "zh-Hans": "正面修整",
-          "zh-Hant": "正面修整"
-        },
-        body: {
-          "zh-Hans": "回到正面细修边缘和线脚，强化轮廓节奏。",
-          "zh-Hant": "回到正面細修邊緣和線腳，強化輪廓節奏。"
-        },
-        image: "/images/process-metal-3.svg"
-      },
-      {
-        title: {
-          "zh-Hans": "抛光与鎏金",
-          "zh-Hant": "拋光與鎏金"
-        },
-        body: {
-          "zh-Hans": "最后通过表面处理统一光泽，让纹样层次更清晰。",
-          "zh-Hant": "最後透過表面處理統一光澤，讓紋樣層次更清晰。"
-        },
-        image: "/images/process-metal-4.svg"
+        image: "/images/video-metal.svg",
+        alt: {
+          "zh-Hans": "金工敲击流程示意",
+          "zh-Hant": "金工敲擊流程示意"
+        }
       }
     ],
-    video: {
-      title: {
-        "zh-Hans": "金工敲击流程示意",
-        "zh-Hant": "金工敲擊流程示意"
-      },
-      image: "/images/video-metal.svg"
+    historyLabel: {
+      "zh-Hans": "工艺过程",
+      "zh-Hant": "工藝過程"
     },
+    historyBody: [
+      {
+        "zh-Hans": "先在金属片表面定出主要纹样和边界。",
+        "zh-Hant": "先在金屬片表面定出主要紋樣和邊界。"
+      },
+      {
+        "zh-Hans": "从背面反复敲击，使图案产生浮雕般的起伏。",
+        "zh-Hant": "從背面反覆敲擊，使圖案產生浮雕般的起伏。"
+      },
+      {
+        "zh-Hans": "回到正面细修边缘和线脚，强化轮廓节奏。",
+        "zh-Hant": "回到正面細修邊緣和線腳，強化輪廓節奏。"
+      },
+      {
+        "zh-Hans": "最后通过表面处理统一光泽，让纹样层次更清晰。",
+        "zh-Hant": "最後透過表面處理統一光澤，讓紋樣層次更清晰。"
+      }
+    ],
+    historyMedia: [
+      {
+        image: "/images/process-metal-2.svg",
+        alt: {
+          "zh-Hans": "金工敲击流程示意",
+          "zh-Hant": "金工敲擊流程示意"
+        }
+      }
+    ],
     relatedObjectSlugs: ["bronze-tray", "lamp-stand"],
     references: []
   }
@@ -2582,6 +2616,7 @@ export function getCatalogContent(locale: Locale): CatalogContent {
       periodLabel: localizeText(locale, entry.periodLabel),
       years: localizeText(locale, entry.years),
       homeCaptionLines: localizeTextList(locale, entry.homeCaptionLines),
+      homeImage: entry.homeImage,
       image: entry.image,
       summary: localizeText(locale, entry.summary),
       heroSubtitle: localizeText(locale, entry.heroSubtitle),
@@ -2604,16 +2639,12 @@ export function getCatalogContent(locale: Locale): CatalogContent {
       slug: entry.slug,
       title: localizeText(locale, entry.title),
       summary: localizeText(locale, entry.summary),
-      intro: localizeTextList(locale, entry.intro),
-      steps: entry.steps.map((step) => ({
-        title: localizeText(locale, step.title),
-        body: localizeText(locale, step.body),
-        image: step.image
-      })),
-      video: {
-        title: localizeText(locale, entry.video.title),
-        image: entry.video.image
-      },
+      introLabel: localizeText(locale, entry.introLabel),
+      introBody: localizeTextList(locale, entry.introBody),
+      introMedia: localizeMedia(locale, entry.introMedia),
+      historyLabel: localizeText(locale, entry.historyLabel),
+      historyBody: localizeTextList(locale, entry.historyBody),
+      historyMedia: localizeMedia(locale, entry.historyMedia),
       relatedObjects: getRelatedObjectCards(locale, entry.relatedObjectSlugs, []),
       references: localizeReferences(locale, entry.references),
       href: `/glossary/${entry.slug}`

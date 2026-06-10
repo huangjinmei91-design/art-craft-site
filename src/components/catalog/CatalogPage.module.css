@@ -102,6 +102,13 @@
   object-fit: cover;
 }
 
+.overviewCopy {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+}
+
 .conceptOverviewCard {
   gap: 14px;
   padding: 22px;
@@ -111,6 +118,20 @@
 .conceptOverviewImage {
   aspect-ratio: 1.58;
   border-radius: 24px;
+}
+
+.timelineOverviewCard {
+  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
+  gap: 16px;
+  padding: 18px;
+  border-radius: 22px;
+  align-items: center;
+}
+
+.timelineOverviewImage {
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  height: 100%;
 }
 
 .overviewMeta {
@@ -150,10 +171,89 @@
   font-size: 18px;
 }
 
+.timelineOverviewCard .overviewTitle {
+  font-size: 22px;
+  line-height: 1.28;
+}
+
+.timelineOverviewCard .overviewSummary {
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.timelineOverviewCard .overviewCta {
+  font-size: 14px;
+}
+
 .detailHero {
   display: grid;
   gap: 20px;
   padding: 32px var(--gutter) 8px;
+}
+
+.timelineHeroSection {
+  display: grid;
+  gap: 18px;
+  padding: 32px 0 0;
+}
+
+.timelineHeroTop {
+  padding: 0 var(--gutter);
+}
+
+.timelineBanner {
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
+  background: #e9e3d8;
+}
+
+.timelineBanner img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.timelineBannerShade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(248, 244, 236, 0.92) 0%, rgba(248, 244, 236, 0.72) 42%, rgba(248, 244, 236, 0.18) 72%, rgba(248, 244, 236, 0) 100%),
+    linear-gradient(180deg, rgba(24, 20, 16, 0.06), rgba(24, 20, 16, 0.12));
+}
+
+.timelineBannerCopy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: end;
+  gap: 12px;
+  min-height: 420px;
+  width: min(640px, 100%);
+  padding: 44px var(--gutter);
+}
+
+.timelineBannerTitle {
+  font-size: clamp(56px, 8vw, 112px);
+  line-height: 1.02;
+}
+
+.timelineBannerMeta,
+.timelineBannerSummary {
+  margin: 0;
+  color: var(--ink);
+}
+
+.timelineBannerMeta {
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.timelineBannerSummary {
+  font-size: 18px;
+  line-height: 1.8;
 }
 
 .conceptBanner {
@@ -263,6 +363,51 @@
   font-size: 30px;
   font-weight: 700;
   line-height: 1.2;
+}
+
+.timelineIntroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(320px, 0.88fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.timelineIntroCopy {
+  display: grid;
+  align-content: start;
+}
+
+.timelineIntroFigure {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fffdf8;
+  overflow: hidden;
+}
+
+.timelineIntroFigure img {
+  width: 100%;
+  aspect-ratio: 1.16;
+  object-fit: cover;
+}
+
+.timelineIntroFigure figcaption {
+  padding: 0 16px 16px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.timelinePanelGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.timelinePanelGridSingle {
+  grid-template-columns: 1fr;
 }
 
 .splitNarrative {
@@ -496,69 +641,44 @@
   outline: none;
 }
 
-.glossaryIntroGrid {
+.glossaryDetailHero {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.glossaryNarrativeGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.84fr) minmax(320px, 1.16fr);
   gap: 28px;
   align-items: start;
 }
 
-.glossarySteps {
-  display: grid;
-  gap: 18px;
+.glossaryNarrativeGridReverse {
+  grid-template-columns: minmax(320px, 1.16fr) minmax(0, 0.84fr);
 }
 
-.glossaryStep {
+.glossaryNarrativeFigure {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
-  gap: 18px;
-  padding: 12px;
-}
-
-.glossaryStepImage {
-  border-radius: 12px;
-  overflow: hidden;
-  background: #f1ede5;
-  min-height: 180px;
-}
-
-.glossaryStepCopy {
-  display: grid;
-  align-content: center;
   gap: 10px;
-}
-
-.glossaryStepCopy p {
   margin: 0;
-  color: var(--ink);
-  line-height: 1.8;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fffdf8;
+  overflow: hidden;
 }
 
-.videoCard {
-  position: relative;
-  margin-top: 18px;
-  min-height: 280px;
+.glossaryNarrativeFigure img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
 }
 
-.videoOverlay {
-  position: absolute;
-  inset: auto 0 0 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 18px;
-  background: linear-gradient(180deg, transparent, rgba(12, 12, 12, 0.68));
-  color: white;
-}
-
-.videoPlay {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14);
+.glossaryNarrativeFigure figcaption {
+  padding: 0 16px 16px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.7;
 }
 
 @media (max-width: 1100px) {
@@ -572,11 +692,9 @@
   .objectHeroGrid,
   .splitNarrative,
   .conceptSourceGrid,
-  .glossaryIntroGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .glossaryStep {
+  .glossaryNarrativeGrid,
+  .glossaryNarrativeGridReverse,
+  .timelineIntroGrid {
     grid-template-columns: 1fr;
   }
 }
@@ -589,8 +707,14 @@
   .conceptGrid,
   .grid,
   .relatedGrid,
-  .mediaMosaic {
+  .mediaMosaic,
+  .timelinePanelGrid {
     grid-template-columns: 1fr;
+  }
+
+  .timelineOverviewCard {
+    grid-template-columns: 1fr;
+    align-items: start;
   }
 
   .hero {
@@ -600,6 +724,24 @@
   .summary,
   .detailSummary {
     font-size: 17px;
+  }
+
+  .timelineHeroSection {
+    padding-top: 20px;
+  }
+
+  .timelineBanner,
+  .timelineBannerCopy {
+    min-height: 320px;
+  }
+
+  .timelineBannerCopy {
+    width: 100%;
+    padding: 32px 20px;
+  }
+
+  .timelineBannerSummary {
+    font-size: 16px;
   }
 
   .mediaCardLarge {

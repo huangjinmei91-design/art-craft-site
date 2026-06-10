@@ -1,4 +1,5 @@
-import type { ConceptEntry, ReferenceItem } from "@/data/catalog";
+import type { ConceptEntry } from "@/data/catalog";
+import { ReferenceList } from "./ReferenceList";
 import styles from "./CatalogPage.module.css";
 
 type RelatedCard = {
@@ -120,15 +121,7 @@ export function ConceptDetailView({
           <div className={styles.sectionHeadingRow}>
             <h2 className={styles.sectionHeading}>参考文献</h2>
           </div>
-          <ol className={styles.referenceList}>
-            {concept.references.map((item: ReferenceItem) => (
-              <li key={item.href}>
-                <a href={item.href} target="_blank" rel="noreferrer">
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ol>
+          <ReferenceList references={concept.references} />
         </section>
       ) : null}
     </>

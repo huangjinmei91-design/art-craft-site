@@ -30,7 +30,7 @@ export function GlossaryPageClient({ slug }: { slug: string }) {
           />
           <GlossaryDetailView
             backHref="/objects"
-            backLabel={locale === "zh-Hans" ? "首页 / 物件详情 / 工艺词条" : "首頁 / 物件詳情 / 工藝詞條"}
+            backLabel={locale === "zh-Hans" ? "首页 / 浏览物件 / 文化延伸" : "首頁 / 瀏覽物件 / 文化延伸"}
             entry={entry}
           />
         </div>

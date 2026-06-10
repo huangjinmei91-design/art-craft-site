@@ -140,7 +140,7 @@ export function CatalogIndexClient({ kind }: { kind: IndexKind }) {
                       key={item.slug}
                       title={item.title}
                       summary={item.summary}
-                      image={item.image}
+                      image={item.homeImage || item.image}
                       href={item.href}
                       meta={`${item.periodLabel} · ${item.years}`}
                       ctaLabel={

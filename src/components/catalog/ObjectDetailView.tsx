@@ -1,4 +1,5 @@
 import type { ObjectEntry } from "@/data/catalog";
+import { ReferenceList } from "./ReferenceList";
 import styles from "./CatalogPage.module.css";
 
 function splitCraftSummary(summary: string): string[] {
@@ -164,15 +165,7 @@ export function ObjectDetailView({
           <div className={styles.sectionHeadingRow}>
             <h2 className={styles.sectionHeading}>参考文献</h2>
           </div>
-          <ol className={styles.referenceList}>
-            {object.references.map((item) => (
-              <li key={item.href}>
-                <a href={item.href} target="_blank" rel="noreferrer">
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ol>
+          <ReferenceList references={object.references} />
         </section>
       ) : null}
     </>

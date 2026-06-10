@@ -59,6 +59,38 @@ test("imported object metadata drives search filters, references, and automatic 
   assert.equal(object.references[0]?.label, "故宫博物院藏品详情");
 });
 
+test("glossary entries expose the new dual-column narrative fields", () => {
+  const glossary = findGlossaryBySlug("zh-Hans", "tea-culture");
+
+  assert.ok(glossary);
+  assert.equal(glossary.introLabel, "简介");
+  assert.ok(glossary.introBody.length >= 1);
+  assert.ok(glossary.introMedia.length >= 1);
+  assert.equal(glossary.historyLabel, "历史发展");
+  assert.ok(glossary.historyBody.length >= 1);
+  assert.ok(glossary.historyMedia.length >= 1);
+});
+
+test("song timeline keeps homepage image separate from banner image and exposes intro caption", () => {
+  const timeline = findTimelineBySlug("zh-Hans", "song");
+
+  assert.ok(timeline);
+  assert.equal(timeline.homeImage, "/images/timeline/song/home.png");
+  assert.equal(timeline.image, "/images/timeline/song/hero.png");
+  assert.equal(timeline.introMedia[0]?.caption, "宋徽宗赵佶 文会图 及局部");
+});
+
+test("timeline order follows han tang song ming qing without leftover yuan entry", () => {
+  const content = getCatalogContent("zh-Hans");
+
+  assert.deepEqual(
+    content.timeline.map((item) => item.slug),
+    ["han", "tang", "song", "ming", "qing"]
+  );
+  assert.equal(content.timeline.some((item) => item.slug === "yuan"), false);
+  assert.equal(content.objects.some((item) => item.eraSlug === "yuan"), false);
+});
+
 test("detail lookup helpers return null for unknown slugs", () => {
   assert.equal(findConceptBySlug("zh-Hans", "missing"), null);
   assert.equal(findObjectBySlug("zh-Hans", "missing"), null);
