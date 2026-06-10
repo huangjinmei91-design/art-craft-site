@@ -29,7 +29,7 @@ export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string 
     () => ({
       dynasties: Array.from(new Set(catalog.objects.map((item) => item.dynasty))),
       colors: Array.from(new Set(catalog.objects.flatMap((item) => item.search.colors))),
-      materials: Array.from(new Set(catalog.objects.flatMap((item) => item.search.materials)))
+      materials: Array.from(new Set(catalog.objects.map((item) => item.material)))
     }),
     [catalog.objects]
   );
@@ -47,8 +47,7 @@ export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string 
       const matchesColors =
         colors.length === 0 || colors.every((value) => item.search.colors.includes(value));
       const matchesMaterials =
-        materials.length === 0 ||
-        materials.every((value) => item.search.materials.includes(value));
+        materials.length === 0 || materials.includes(item.material);
 
       return matchesQuery && matchesDynasty && matchesColors && matchesMaterials;
     });
@@ -77,21 +76,16 @@ export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string 
   }, [catalog.objects, colors, dynasties, locale, materials, query, sort]);
 
   const activeKeywords = [
-    ...query
-      .split(/\s+/)
-      .map((item) => item.trim())
-      .filter(Boolean),
     ...dynasties,
     ...colors,
     ...materials
   ];
 
   const copy = {
-    keywords: locale === "zh-Hans" ? "关键词" : "關鍵詞",
+    keywords: locale === "zh-Hans" ? "筛选条件" : "篩選條件",
     dynasty: locale === "zh-Hans" ? "时代" : "時代",
     color: locale === "zh-Hans" ? "颜色" : "顏色",
-    material: locale === "zh-Hans" ? "材质" : "材質",
-    emptyKeywords: locale === "zh-Hans" ? "输入关键词或筛选条件" : "輸入關鍵詞或篩選條件"
+    material: locale === "zh-Hans" ? "材质" : "材質"
   };
 
   return (
@@ -110,15 +104,11 @@ export function SearchPageClient({ initialQuery = "" }: { initialQuery?: string 
               <div className={styles.filterBlock}>
                 <h2 className={styles.filterTitle}>{copy.keywords}</h2>
                 <div className={styles.keywordChips}>
-                  {activeKeywords.length > 0 ? (
-                    activeKeywords.map((item) => (
-                      <span key={item} className={styles.keywordChip}>
-                        {item}
-                      </span>
-                    ))
-                  ) : (
-                    <span className={styles.keywordEmpty}>{copy.emptyKeywords}</span>
-                  )}
+                  {activeKeywords.map((item) => (
+                    <span key={item} className={styles.keywordChip}>
+                      {item}
+                    </span>
+                  ))}
                 </div>
               </div>
 
