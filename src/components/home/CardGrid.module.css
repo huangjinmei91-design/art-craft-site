@@ -56,6 +56,10 @@
   opacity: 0.92;
 }
 
+.imageFrame .image {
+  object-position: 82% center;
+}
+
 .conceptOverlay {
   position: relative;
   z-index: 1;
@@ -161,6 +165,10 @@
 @media (max-width: 900px) {
   .conceptOverlay {
     min-height: 260px;
+  }
+
+  .imageFrame .image {
+    object-position: 78% center;
   }
 
   .conceptTitle {

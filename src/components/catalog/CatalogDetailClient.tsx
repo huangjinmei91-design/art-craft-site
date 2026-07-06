@@ -105,7 +105,12 @@ function getTimelineCultureCards(
     .map((item) => ({
       title: item.title,
       summary: item.summary,
-      image: item.introMedia[0]?.image || item.historyMedia[0]?.image || "/images/video-kiln.svg",
+      image:
+        item.introMedia[0]?.image ||
+        item.historyMedia[0]?.image ||
+        item.relatedObjects[0]?.image ||
+        objects.find((object) => object.eraSlug === eraSlug)?.image ||
+        "/images/concepts/utility/banner.png",
       href: item.href,
       ctaLabel: locale === "zh-Hans" ? "进入词条" : "進入詞條",
       variant: "timelinePanel"
