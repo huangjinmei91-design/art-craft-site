@@ -91,6 +91,21 @@ test("timeline order follows han tang song ming qing without leftover yuan entry
   assert.equal(content.objects.some((item) => item.eraSlug === "yuan"), false);
 });
 
+test("timeline index cards keep dedicated home images for each dynasty", () => {
+  const content = getCatalogContent("zh-Hans");
+
+  assert.deepEqual(
+    content.timeline.map((item) => item.homeImage),
+    [
+      "/images/timeline/han/home.png",
+      "/images/timeline/tang/home.png",
+      "/images/timeline/song/home.png",
+      "/images/timeline/ming/home.png",
+      "/images/timeline/qing/home.png"
+    ]
+  );
+});
+
 test("detail lookup helpers return null for unknown slugs", () => {
   assert.equal(findConceptBySlug("zh-Hans", "missing"), null);
   assert.equal(findObjectBySlug("zh-Hans", "missing"), null);

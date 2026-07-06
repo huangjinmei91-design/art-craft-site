@@ -138,6 +138,10 @@
   height: 100%;
 }
 
+.timelineOverviewIndexImage img {
+  object-position: top center;
+}
+
 .overviewMeta {
   color: var(--ink-soft);
   font-size: 12px;

@@ -2651,7 +2651,7 @@
     "section_2_body_zh_hans": "",
     "section_2_image_1": "",
     "section_2_image_1_caption_zh_hans": "",
-    "home_image": "",
+    "home_image": "/images/timeline/han/home.png",
     "intro_image_1_caption_zh_hans": ""
   },
   {
@@ -2710,7 +2710,7 @@
     "section_2_body_zh_hans": "",
     "section_2_image_1": "",
     "section_2_image_1_caption_zh_hans": "",
-    "home_image": "",
+    "home_image": "/images/timeline/tang/home.png",
     "intro_image_1_caption_zh_hans": ""
   },
   {
@@ -2828,7 +2828,7 @@
     "section_2_body_zh_hans": "",
     "section_2_image_1": "",
     "section_2_image_1_caption_zh_hans": "",
-    "home_image": "",
+    "home_image": "/images/timeline/ming/home.png",
     "intro_image_1_caption_zh_hans": ""
   },
   {
@@ -2887,7 +2887,7 @@
     "section_2_body_zh_hans": "",
     "section_2_image_1": "",
     "section_2_image_1_caption_zh_hans": "",
-    "home_image": "",
+    "home_image": "/images/timeline/qing/home.png",
     "intro_image_1_caption_zh_hans": ""
   }
 ]

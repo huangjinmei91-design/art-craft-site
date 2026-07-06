@@ -148,6 +148,7 @@ export function CatalogIndexClient({ kind }: { kind: IndexKind }) {
                           ? pageCopy.cta.hans
                           : pageCopy.cta.hant
                       }
+                      variant="timelineIndex"
                     />
                   ))
                 : null}

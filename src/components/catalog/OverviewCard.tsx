@@ -15,15 +15,17 @@ export function OverviewCard({
   href: string;
   meta?: string;
   ctaLabel: string;
-  variant?: "default" | "conceptIndex" | "timelinePanel";
+  variant?: "default" | "conceptIndex" | "timelineIndex" | "timelinePanel";
 }) {
+  const isTimelineCard = variant === "timelineIndex" || variant === "timelinePanel";
+
   return (
     <a
       href={href}
       className={
         variant === "conceptIndex"
           ? `${styles.overviewCard} ${styles.conceptOverviewCard}`
-          : variant === "timelinePanel"
+          : isTimelineCard
             ? `${styles.overviewCard} ${styles.timelineOverviewCard}`
             : styles.overviewCard
       }
@@ -32,8 +34,10 @@ export function OverviewCard({
         className={
           variant === "conceptIndex"
             ? `${styles.overviewImage} ${styles.conceptOverviewImage}`
-            : variant === "timelinePanel"
-              ? `${styles.overviewImage} ${styles.timelineOverviewImage}`
+            : variant === "timelineIndex"
+              ? `${styles.overviewImage} ${styles.timelineOverviewImage} ${styles.timelineOverviewIndexImage}`
+              : variant === "timelinePanel"
+                ? `${styles.overviewImage} ${styles.timelineOverviewImage}`
               : styles.overviewImage
         }
       >
