@@ -24,7 +24,7 @@ type TimelinePanelCard = {
   image: string;
   href: string;
   ctaLabel: string;
-  variant?: "default" | "conceptIndex" | "timelinePanel";
+  variant?: "default" | "conceptIndex" | "timelinePanel" | "timelinePhilosophyPanel";
 };
 
 function rankSlugsByFrequency(slugs: string[]): string[] {
@@ -80,7 +80,7 @@ function getTimelinePhilosophyCards(
       image: item.image,
       href: item.href,
       ctaLabel: locale === "zh-Hans" ? "进入理念" : "進入理念",
-      variant: "timelinePanel"
+      variant: "timelinePhilosophyPanel"
     }));
 }
 

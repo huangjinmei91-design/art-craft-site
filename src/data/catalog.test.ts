@@ -71,6 +71,18 @@ test("glossary entries expose the new dual-column narrative fields", () => {
   assert.ok(glossary.historyMedia.length >= 1);
 });
 
+test("glossary body copy falls back to generated traditional Chinese when hant fields are empty", () => {
+  const glossary = findGlossaryBySlug("zh-Hant", "tea-culture");
+
+  assert.ok(glossary);
+  assert.equal(glossary.introLabel, "簡介");
+  assert.equal(glossary.historyLabel, "歷史發展");
+  assert.match(glossary.introBody[0] ?? "", /種植/);
+  assert.match(glossary.introBody[0] ?? "", /製作/);
+  assert.match(glossary.historyBody[0] ?? "", /神農本草經/);
+  assert.match(glossary.historyBody[0] ?? "", /關於茶作為日常飲品/);
+});
+
 test("song timeline keeps homepage image separate from banner image and exposes intro caption", () => {
   const timeline = findTimelineBySlug("zh-Hans", "song");
 

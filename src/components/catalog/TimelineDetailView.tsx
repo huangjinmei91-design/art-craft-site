@@ -9,7 +9,7 @@ type TimelinePanelCard = {
   image: string;
   href: string;
   ctaLabel: string;
-  variant?: "default" | "conceptIndex" | "timelinePanel";
+  variant?: "default" | "conceptIndex" | "timelinePanel" | "timelinePhilosophyPanel";
 };
 
 export function TimelineDetailView({
@@ -41,12 +41,8 @@ export function TimelineDetailView({
 
         <div className={styles.timelineBanner}>
           <img src={entry.image} alt={entry.title} />
-          <div className={styles.timelineBannerShade} />
           <div className={styles.timelineBannerCopy}>
-            <p className={styles.detailKicker}>{entry.heroSubtitle}</p>
-            <h1 className={`${styles.detailTitle} ${styles.timelineBannerTitle}`}>{entry.title}</h1>
             {periodSummary ? <p className={styles.timelineBannerMeta}>{periodSummary}</p> : null}
-            <p className={styles.timelineBannerSummary}>{entry.summary}</p>
           </div>
         </div>
       </section>

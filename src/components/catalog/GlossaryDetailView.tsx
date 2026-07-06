@@ -6,12 +6,14 @@ function NarrativeSection({
   heading,
   body,
   figure,
-  reverse
+  reverse,
+  variant = "intro"
 }: {
   heading: string;
   body: string[];
   figure?: GlossaryEntry["introMedia"][number];
   reverse?: boolean;
+  variant?: "intro" | "history";
 }) {
   if (body.length === 0 && !figure) {
     return null;
@@ -32,7 +34,13 @@ function NarrativeSection({
         {reverse ? (
           <>
             {figure ? (
-              <figure className={styles.glossaryNarrativeFigure}>
+              <figure
+                className={
+                  variant === "history"
+                    ? `${styles.glossaryNarrativeFigure} ${styles.glossaryNarrativeFigureHistory}`
+                    : styles.glossaryNarrativeFigure
+                }
+              >
                 <img src={figure.image} alt={figure.alt} />
                 {figure.caption ? <figcaption>{figure.caption}</figcaption> : null}
               </figure>
@@ -55,7 +63,13 @@ function NarrativeSection({
               </div>
             ) : null}
             {figure ? (
-              <figure className={styles.glossaryNarrativeFigure}>
+              <figure
+                className={
+                  variant === "history"
+                    ? `${styles.glossaryNarrativeFigure} ${styles.glossaryNarrativeFigureHistory}`
+                    : styles.glossaryNarrativeFigure
+                }
+              >
                 <img src={figure.image} alt={figure.alt} />
                 {figure.caption ? <figcaption>{figure.caption}</figcaption> : null}
               </figure>
@@ -99,6 +113,7 @@ export function GlossaryDetailView({
         body={entry.historyBody}
         figure={entry.historyMedia[0]}
         reverse
+        variant="history"
       />
 
       {entry.relatedObjects.length > 0 ? (

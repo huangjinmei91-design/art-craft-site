@@ -1,4 +1,5 @@
 import type { Locale } from "./home";
+import OpenCC from "opencc-js";
 import importedMasterRows from "./generated/master-content.json";
 
 type LocalizedText = Record<Locale, string>;
@@ -290,10 +291,20 @@ function localizeText(locale: Locale, value: LocalizedText): string {
   return value[locale];
 }
 
+const simplifiedToTraditional = OpenCC.Converter({ from: "cn", to: "tw" });
+
+function normalizeTraditionalFallback(value: string): string {
+  if (!value) {
+    return value;
+  }
+
+  return simplifiedToTraditional(value);
+}
+
 function createLocalizedText(hans: string, hant: string): LocalizedText {
   return {
     "zh-Hans": hans,
-    "zh-Hant": hant || hans
+    "zh-Hant": hant || normalizeTraditionalFallback(hans)
   };
 }
 

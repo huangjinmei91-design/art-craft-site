@@ -15,9 +15,17 @@ export function OverviewCard({
   href: string;
   meta?: string;
   ctaLabel: string;
-  variant?: "default" | "conceptIndex" | "timelineIndex" | "timelinePanel";
+  variant?:
+    | "default"
+    | "conceptIndex"
+    | "timelineIndex"
+    | "timelinePanel"
+    | "timelinePhilosophyPanel";
 }) {
-  const isTimelineCard = variant === "timelineIndex" || variant === "timelinePanel";
+  const isTimelineCard =
+    variant === "timelineIndex" ||
+    variant === "timelinePanel" ||
+    variant === "timelinePhilosophyPanel";
 
   return (
     <a
@@ -36,6 +44,8 @@ export function OverviewCard({
             ? `${styles.overviewImage} ${styles.conceptOverviewImage}`
             : variant === "timelineIndex"
               ? `${styles.overviewImage} ${styles.timelineOverviewImage} ${styles.timelineOverviewIndexImage}`
+              : variant === "timelinePhilosophyPanel"
+                ? `${styles.overviewImage} ${styles.timelineOverviewImage} ${styles.timelineOverviewPhilosophyImage}`
               : variant === "timelinePanel"
                 ? `${styles.overviewImage} ${styles.timelineOverviewImage}`
               : styles.overviewImage

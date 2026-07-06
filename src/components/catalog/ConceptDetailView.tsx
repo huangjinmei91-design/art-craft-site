@@ -60,8 +60,8 @@ export function ConceptDetailView({
               <div
                 className={
                   sourceSection.media.length === 1
-                    ? `${styles.mediaMosaic} ${styles.mediaMosaicSingle}`
-                    : styles.mediaMosaic
+                    ? `${styles.mediaMosaic} ${styles.mediaMosaicSingle} ${styles.conceptSourceMediaGrid}`
+                    : `${styles.mediaMosaic} ${styles.conceptSourceMediaGrid}`
                 }
               >
                 {sourceSection.media.map((item) => (
