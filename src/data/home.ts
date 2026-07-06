@@ -186,14 +186,19 @@ function createHomePageContent(locale: Locale): HomePageData {
       }
     },
     heroSlides,
-    conceptCards: catalog.concepts
-      .filter((entry) => entry.featuredOnHome)
+    conceptCards: heroSlideOrder
+      .map((slug) =>
+        catalog.concepts.find(
+          (entry) => entry.slug === slug && entry.featuredOnHome
+        )
+      )
+      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
       .map((entry) => ({
-      title: entry.title,
-      description: entry.summary,
-      image: entry.image,
-      href: entry.href
-    })),
+        title: entry.title,
+        description: entry.summary,
+        image: entry.image,
+        href: entry.href
+      })),
     objectCards: catalog.objects
       .map((entry) => ({
       title: entry.title,

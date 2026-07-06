@@ -21,12 +21,12 @@ test("detail lookup helpers return localized entries by slug", () => {
   const concept = findConceptBySlug("zh-Hant", "utility");
   const object = findObjectBySlug("zh-Hans", "song-jianyangheiyoutuhao-zhan");
   const timeline = findTimelineBySlug("zh-Hans", "song");
-  const glossary = findGlossaryBySlug("zh-Hans", "kiln-transmutation");
+  const glossary = findGlossaryBySlug("zh-Hans", "tea-culture");
 
   assert.equal(concept?.title, "格物致用");
   assert.equal(object?.title, "宋建阳窑黑釉兔毫盏");
   assert.equal(timeline?.title, "宋");
-  assert.equal(glossary?.title, "窑变与兔毫纹");
+  assert.equal(glossary?.title, "茶文化");
   assert.ok((concept?.sections.length ?? 0) >= 1);
 });
 
@@ -41,7 +41,7 @@ test("imported objects from the single master csv drive the catalog content", ()
   assert.equal(imported.title, "宋建阳窑黑釉兔毫盏");
   assert.equal(imported.featuredOnHome, true);
   assert.equal(imported.eraSlug, "song");
-  assert.deepEqual(imported.conceptSlugs, ["utility", "zen"]);
+  assert.deepEqual(imported.conceptSlugs, ["utility", "harmony"]);
 });
 
 test("imported object metadata drives search filters, references, and automatic related recommendations", () => {
