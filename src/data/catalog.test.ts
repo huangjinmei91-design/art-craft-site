@@ -74,10 +74,14 @@ test("glossary entries expose the new dual-column narrative fields", () => {
 test("glossary recommendations and intro images come from the master csv", () => {
   const scholarGlossary = findGlossaryBySlug("zh-Hans", "scholar-life-aesthetics");
   const teaGlossary = findGlossaryBySlug("zh-Hans", "tea-culture");
+  const incenseGlossary = findGlossaryBySlug("zh-Hans", "incense-culture");
 
   assert.ok(scholarGlossary);
   assert.ok(teaGlossary);
+  assert.ok(incenseGlossary);
   assert.equal(scholarGlossary.introMedia[0]?.image, "/images/glossary/scholar-aesthetics/hero.png");
+  assert.equal(scholarGlossary.introMedia[0]?.caption, "文徵明《兰亭修禊图》");
+  assert.equal(scholarGlossary.historyMedia[0]?.caption, "仇英 临宋人画册");
   assert.ok(scholarGlossary.relatedObjects.length >= 4);
   assert.ok(
     scholarGlossary.relatedObjects.some(
@@ -87,6 +91,13 @@ test("glossary recommendations and intro images come from the master csv", () =>
   assert.ok(
     teaGlossary.relatedObjects.some(
       (item) => item.href === "/objects/qing-yixingzishatiliang-hu"
+    )
+  );
+  assert.equal(incenseGlossary.introMedia[0]?.caption, "丁谓《天香传》");
+  assert.equal(incenseGlossary.historyMedia[0]?.caption, "赵佶《听琴图》轴");
+  assert.ok(
+    incenseGlossary.relatedObjects.some(
+      (item) => item.href === "/objects/han-cuojinyinboshan-lu"
     )
   );
 });
