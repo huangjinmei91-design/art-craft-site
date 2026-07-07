@@ -64,6 +64,12 @@
   gap: 22px;
 }
 
+.timelineGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
 .conceptGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -121,25 +127,36 @@
 }
 
 .conceptOverviewImage img {
-  object-position: 82% center;
+  object-position: 88% center;
+}
+
+.timelineOverviewIndexCard {
+  gap: 14px;
+  padding: 22px;
+  border-radius: 28px;
+}
+
+.timelineOverviewIndexCardImage {
+  aspect-ratio: 1.58;
+  border-radius: 24px;
+}
+
+.timelineOverviewIndexCardImage img {
+  object-position: top center;
 }
 
 .timelineOverviewCard {
-  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
-  gap: 16px;
-  padding: 18px;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 20px;
+  padding: 20px;
   border-radius: 22px;
-  align-items: center;
+  align-items: stretch;
 }
 
 .timelineOverviewImage {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 5 / 4;
   border-radius: 16px;
   height: 100%;
-}
-
-.timelineOverviewIndexImage img {
-  object-position: top center;
 }
 
 .timelineOverviewPhilosophyImage img {
@@ -183,6 +200,35 @@
   font-size: 18px;
 }
 
+.timelineOverviewIndexCard .overviewTitle {
+  font-size: 38px;
+  line-height: 1.12;
+}
+
+.timelineOverviewIndexCopy {
+  gap: 8px;
+}
+
+.timelineOverviewIndexRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.timelineOverviewIndexRow .overviewTitle {
+  flex: 0 1 auto;
+}
+
+.timelineOverviewIndexRow .overviewCta {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.timelineOverviewIndexCard .overviewCta {
+  font-size: 18px;
+}
+
 .timelineOverviewCard .overviewTitle {
   font-size: 22px;
   line-height: 1.28;
@@ -193,13 +239,13 @@
   line-height: 1.7;
 }
 
-  .timelineOverviewCard .overviewCta {
-    font-size: 14px;
-  }
+.timelineOverviewCard .overviewCopy {
+  align-content: center;
+}
 
-  .conceptOverviewImage img {
-    object-position: 78% center;
-  }
+.timelineOverviewCard .overviewCta {
+  font-size: 14px;
+}
 
 .detailHero {
   display: grid;
@@ -417,8 +463,7 @@
 }
 
 .longformText {
-  display: grid;
-  gap: 14px;
+  display: block;
   color: var(--ink);
   font-size: 16px;
   line-height: 1.92;
@@ -426,6 +471,10 @@
 
 .longformText p {
   margin: 0;
+}
+
+.longformText p + p {
+  margin-top: 14px;
 }
 
 .mediaMosaic {
@@ -597,8 +646,10 @@
 }
 
 .readingBlock {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
   margin-top: 8px;
 }
 
@@ -643,35 +694,42 @@
   margin-top: 16px;
 }
 
-.glossaryNarrativeGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 0.84fr) minmax(320px, 1.16fr);
-  gap: 28px;
-  align-items: start;
-}
-
-.glossaryNarrativeGridReverse {
-  grid-template-columns: minmax(320px, 1.16fr) minmax(0, 0.84fr);
+.glossaryNarrativeFlow {
+  display: flow-root;
 }
 
 .glossaryNarrativeFigure {
   display: grid;
   gap: 10px;
-  margin: 0;
+  margin: 0 0 18px;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: #fffdf8;
   overflow: hidden;
 }
 
-.glossaryNarrativeFigure img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+.glossaryNarrativeFigureRight {
+  float: right;
+  margin-left: 26px;
 }
 
-.glossaryNarrativeFigureHistory img {
-  aspect-ratio: 3 / 4;
+.glossaryNarrativeFigureLeft {
+  float: left;
+  margin-right: 26px;
+}
+
+.glossaryNarrativeFigureIntro {
+  width: clamp(320px, 42%, 500px);
+}
+
+.glossaryNarrativeFigureHistory {
+  width: clamp(280px, 34%, 400px);
+}
+
+.glossaryNarrativeFigure img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .glossaryNarrativeFigure figcaption {
@@ -684,6 +742,7 @@
 @media (max-width: 1100px) {
   .conceptGrid,
   .grid,
+  .timelineGrid,
   .relatedGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -692,8 +751,6 @@
   .objectHeroGrid,
   .splitNarrative,
   .conceptSourceGrid,
-  .glossaryNarrativeGrid,
-  .glossaryNarrativeGridReverse,
   .timelineIntroGrid {
     grid-template-columns: 1fr;
   }
@@ -706,6 +763,7 @@
 
   .conceptGrid,
   .grid,
+  .timelineGrid,
   .relatedGrid,
   .mediaMosaic,
   .timelinePanelGrid {
@@ -715,6 +773,11 @@
   .timelineOverviewCard {
     grid-template-columns: 1fr;
     align-items: start;
+  }
+
+  .timelineOverviewIndexRow {
+    align-items: flex-start;
+    flex-wrap: wrap;
   }
 
   .hero {
@@ -728,6 +791,15 @@
 
   .timelineHeroSection {
     padding-top: 20px;
+  }
+
+  .glossaryNarrativeFigureRight,
+  .glossaryNarrativeFigureLeft {
+    float: none;
+    width: 100%;
+    max-width: none;
+    margin-right: 0;
+    margin-left: 0;
   }
 
   .timelineBanner,
@@ -745,5 +817,9 @@
 
   .insightCard {
     grid-template-columns: 1fr;
+  }
+
+  .conceptOverviewImage img {
+    object-position: 84% center;
   }
 }

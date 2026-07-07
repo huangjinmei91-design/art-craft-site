@@ -5,6 +5,8 @@ import {
   filterSearchEntries,
   getActiveHeroSlide,
   getHomePageData,
+  selectHomepageConceptCards,
+  selectHomepageHeroSlides,
   selectHomepageObjectCards
 } from "@/data/home";
 
@@ -17,16 +19,11 @@ test("homePageData provides the frontpage sections needed by the homepage", () =
     { label: "时代长廊", href: "/timeline" }
   ]);
 
-  assert.equal(homePageData.heroSlides.length, 3);
-  assert.deepEqual(
-    homePageData.heroSlides.map((slide) => slide.title),
-    ["格物致用", "融合多元", "天人合一"]
-  );
-  assert.deepEqual(
-    homePageData.heroSlides.map((slide) => slide.href),
-    ["/concepts/utility", "/concepts/fusion", "/concepts/harmony"]
-  );
-  assert.equal(homePageData.conceptCards.length, 3);
+  assert.ok(homePageData.heroSlides.length >= 3);
+  assert.ok(homePageData.conceptCards.length >= 3);
+  assert.ok(homePageData.heroSlides.some((slide) => slide.href === "/concepts/utility"));
+  assert.ok(homePageData.heroSlides.some((slide) => slide.href === "/concepts/fusion"));
+  assert.ok(homePageData.heroSlides.some((slide) => slide.href === "/concepts/harmony"));
   assert.ok(homePageData.objectCards.length >= 6);
   assert.ok(homePageData.timelineItems.length >= 5);
   assert.equal(homePageData.sections.timeline.actionLabel, "进入时代长廊");
@@ -67,6 +64,20 @@ test("selectHomepageObjectCards returns six unique cards in a seeded order", () 
 
   assert.equal(selected.length, 6);
   assert.equal(new Set(selected.map((item) => item.href)).size, 6);
+});
+
+test("selectHomepageConceptCards returns three unique cards in a seeded order", () => {
+  const selected = selectHomepageConceptCards(getHomePageData("zh-Hans").conceptCards, 42, 3);
+
+  assert.equal(selected.length, 3);
+  assert.equal(new Set(selected.map((item) => item.href)).size, 3);
+});
+
+test("selectHomepageHeroSlides returns three unique slides in a seeded order", () => {
+  const selected = selectHomepageHeroSlides(getHomePageData("zh-Hans").heroSlides, 42, 3);
+
+  assert.equal(selected.length, 3);
+  assert.equal(new Set(selected.map((item) => item.href)).size, 3);
 });
 
 test("getActiveHeroSlide returns null when the hero has no slides", () => {

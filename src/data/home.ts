@@ -90,13 +90,17 @@ export type HomePageData = {
   timelineItems: TimelineItem[];
 };
 
-function createSeededOrder(items: ObjectCard[], seed: number): ObjectCard[] {
+function createSeededOrder<T>(
+  items: T[],
+  seed: number,
+  getKey: (item: T) => string
+): T[] {
   const normalizedSeed = Number.isFinite(seed) && seed > 0 ? seed : 1;
 
   return items
     .map((item, index) => {
       let hash = normalizedSeed + index * 2654435761;
-      const source = `${item.href}:${item.accessionNumber}`;
+      const source = getKey(item);
 
       for (const char of source) {
         hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
@@ -113,10 +117,8 @@ function createSeededOrder(items: ObjectCard[], seed: number): ObjectCard[] {
 
 function createHomePageContent(locale: Locale): HomePageData {
   const catalog = getCatalogContent(locale);
-  const heroSlideOrder = ["utility", "fusion", "harmony"];
-  const heroSlides = heroSlideOrder
-    .map((slug) => catalog.concepts.find((entry) => entry.slug === slug))
-    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+  const featuredConcepts = catalog.concepts.filter((entry) => entry.featuredOnHome);
+  const heroSlides = featuredConcepts
     .map((entry) => ({
       title: entry.title,
       subtitle: entry.heroSubtitle,
@@ -186,13 +188,7 @@ function createHomePageContent(locale: Locale): HomePageData {
       }
     },
     heroSlides,
-    conceptCards: heroSlideOrder
-      .map((slug) =>
-        catalog.concepts.find(
-          (entry) => entry.slug === slug && entry.featuredOnHome
-        )
-      )
-      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+    conceptCards: featuredConcepts
       .map((entry) => ({
         title: entry.title,
         description: entry.summary,
@@ -232,7 +228,35 @@ export function selectHomepageObjectCards(
     (card, index, list) => list.findIndex((item) => item.href === card.href) === index
   );
 
-  return createSeededOrder(uniqueCards, seed).slice(0, count);
+  return createSeededOrder(
+    uniqueCards,
+    seed,
+    (card) => `${card.href}:${card.accessionNumber}`
+  ).slice(0, count);
+}
+
+export function selectHomepageConceptCards(
+  cards: ConceptCard[],
+  seed: number,
+  count = 3
+): ConceptCard[] {
+  const uniqueCards = cards.filter(
+    (card, index, list) => list.findIndex((item) => item.href === card.href) === index
+  );
+
+  return createSeededOrder(uniqueCards, seed, (card) => `${card.href}:${card.title}`).slice(0, count);
+}
+
+export function selectHomepageHeroSlides(
+  slides: HeroSlide[],
+  seed: number,
+  count = 3
+): HeroSlide[] {
+  const uniqueSlides = slides.filter(
+    (slide, index, list) => list.findIndex((item) => item.href === slide.href) === index
+  );
+
+  return createSeededOrder(uniqueSlides, seed, (slide) => `${slide.href}:${slide.title}`).slice(0, count);
 }
 
 export function buildSearchEntries(data: HomePageData): SearchEntry[] {

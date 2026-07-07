@@ -11,6 +11,8 @@ import { TimelineCard } from "@/components/home/TimelineCard";
 import {
   buildSearchEntries,
   getHomePageData,
+  selectHomepageConceptCards,
+  selectHomepageHeroSlides,
   selectHomepageObjectCards,
 } from "@/data/home";
 import styles from "@/components/home/Frontpage.module.css";
@@ -18,8 +20,17 @@ import { usePreferredLocale } from "@/components/usePreferredLocale";
 
 export function FrontpageClient() {
   const [locale, setLocale] = usePreferredLocale("zh-Hans");
+  const [conceptSeed, setConceptSeed] = useState<number>(0);
   const [objectSeed, setObjectSeed] = useState<number>(0);
   const pageData = useMemo(() => getHomePageData(locale), [locale]);
+  const heroSlides = useMemo(
+    () => selectHomepageHeroSlides(pageData.heroSlides, conceptSeed, 3),
+    [conceptSeed, pageData.heroSlides]
+  );
+  const conceptCards = useMemo(
+    () => selectHomepageConceptCards(pageData.conceptCards, conceptSeed + 17, 3),
+    [conceptSeed, pageData.conceptCards]
+  );
   const objectCards = useMemo(
     () => selectHomepageObjectCards(pageData.objectCards, objectSeed, 6),
     [objectSeed, pageData.objectCards]
@@ -27,16 +38,23 @@ export function FrontpageClient() {
   const searchEntries = useMemo(() => buildSearchEntries(pageData), [pageData]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || objectSeed !== 0) {
+    if (typeof window === "undefined" || (objectSeed !== 0 && conceptSeed !== 0)) {
       return;
     }
 
-    const randomSeed = window.crypto?.getRandomValues
-      ? window.crypto.getRandomValues(new Uint32Array(1))[0] ?? 1
+    const randomSeeds = window.crypto?.getRandomValues
+      ? window.crypto.getRandomValues(new Uint32Array(2))
+      : undefined;
+    const nextConceptSeed = randomSeeds?.[0]
+      ? randomSeeds[0]
+      : Math.floor(Math.random() * 1_000_000_000);
+    const nextObjectSeed = randomSeeds?.[1]
+      ? randomSeeds[1]
       : Math.floor(Math.random() * 1_000_000_000);
 
-    setObjectSeed(randomSeed || 1);
-  }, [objectSeed]);
+    setConceptSeed(nextConceptSeed || 1);
+    setObjectSeed(nextObjectSeed || 1);
+  }, [conceptSeed, objectSeed]);
 
   return (
     <main className={styles.page}>
@@ -51,7 +69,7 @@ export function FrontpageClient() {
           />
 
           <HeroCarousel
-            slides={pageData.heroSlides}
+            slides={heroSlides}
             emptyState={pageData.heroEmptyState}
           />
 
@@ -62,7 +80,7 @@ export function FrontpageClient() {
               href={pageData.sections.concepts.href}
             />
             <div className={styles.threeColumnGrid}>
-              {pageData.conceptCards.map((card) => (
+              {conceptCards.map((card) => (
                 <ConceptCard key={card.title} card={card} />
               ))}
             </div>

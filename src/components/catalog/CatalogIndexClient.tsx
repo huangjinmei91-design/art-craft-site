@@ -58,8 +58,8 @@ const copy = {
       hant: "時代線索"
     },
     cta: {
-      hans: "查看时代",
-      hant: "查看時代"
+      hans: "进入时代",
+      hant: "進入時代"
     }
   }
 } as const;
@@ -97,7 +97,13 @@ export function CatalogIndexClient({ kind }: { kind: IndexKind }) {
 
           <section className={styles.section}>
             <div
-              className={kind === "concepts" ? styles.conceptGrid : styles.grid}
+              className={
+                kind === "concepts"
+                  ? styles.conceptGrid
+                  : kind === "timeline"
+                    ? styles.timelineGrid
+                    : styles.grid
+              }
             >
               {kind === "concepts"
                 ? catalog.concepts.map((item) => (
@@ -139,7 +145,6 @@ export function CatalogIndexClient({ kind }: { kind: IndexKind }) {
                     <OverviewCard
                       key={item.slug}
                       title={item.title}
-                      summary={item.summary}
                       image={item.homeImage || item.image}
                       href={item.href}
                       meta={`${item.periodLabel} · ${item.years}`}

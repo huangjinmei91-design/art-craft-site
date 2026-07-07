@@ -71,6 +71,26 @@ test("glossary entries expose the new dual-column narrative fields", () => {
   assert.ok(glossary.historyMedia.length >= 1);
 });
 
+test("glossary recommendations and intro images come from the master csv", () => {
+  const scholarGlossary = findGlossaryBySlug("zh-Hans", "scholar-life-aesthetics");
+  const teaGlossary = findGlossaryBySlug("zh-Hans", "tea-culture");
+
+  assert.ok(scholarGlossary);
+  assert.ok(teaGlossary);
+  assert.equal(scholarGlossary.introMedia[0]?.image, "/images/glossary/scholar-aesthetics/hero.png");
+  assert.ok(scholarGlossary.relatedObjects.length >= 4);
+  assert.ok(
+    scholarGlossary.relatedObjects.some(
+      (item) => item.href === "/objects/song-jianyangheiyoutuhao-zhan"
+    )
+  );
+  assert.ok(
+    teaGlossary.relatedObjects.some(
+      (item) => item.href === "/objects/qing-yixingzishatiliang-hu"
+    )
+  );
+});
+
 test("glossary body copy falls back to generated traditional Chinese when hant fields are empty", () => {
   const glossary = findGlossaryBySlug("zh-Hant", "tea-culture");
 

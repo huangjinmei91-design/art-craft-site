@@ -26,6 +26,7 @@ export function OverviewCard({
     variant === "timelineIndex" ||
     variant === "timelinePanel" ||
     variant === "timelinePhilosophyPanel";
+  const isTimelineIndex = variant === "timelineIndex";
 
   return (
     <a
@@ -33,7 +34,9 @@ export function OverviewCard({
       className={
         variant === "conceptIndex"
           ? `${styles.overviewCard} ${styles.conceptOverviewCard}`
-          : isTimelineCard
+          : variant === "timelineIndex"
+            ? `${styles.overviewCard} ${styles.timelineOverviewIndexCard}`
+            : isTimelineCard
             ? `${styles.overviewCard} ${styles.timelineOverviewCard}`
             : styles.overviewCard
       }
@@ -43,7 +46,7 @@ export function OverviewCard({
           variant === "conceptIndex"
             ? `${styles.overviewImage} ${styles.conceptOverviewImage}`
             : variant === "timelineIndex"
-              ? `${styles.overviewImage} ${styles.timelineOverviewImage} ${styles.timelineOverviewIndexImage}`
+              ? `${styles.overviewImage} ${styles.timelineOverviewIndexCardImage}`
               : variant === "timelinePhilosophyPanel"
                 ? `${styles.overviewImage} ${styles.timelineOverviewImage} ${styles.timelineOverviewPhilosophyImage}`
               : variant === "timelinePanel"
@@ -53,14 +56,32 @@ export function OverviewCard({
       >
         <img src={image} alt={title} />
       </div>
-      <div className={styles.overviewCopy}>
+      <div
+        className={
+          isTimelineIndex
+            ? `${styles.overviewCopy} ${styles.timelineOverviewIndexCopy}`
+            : styles.overviewCopy
+        }
+      >
         {meta ? <div className={styles.overviewMeta}>{meta}</div> : null}
-        <h2 className={styles.overviewTitle}>{title}</h2>
+        {isTimelineIndex ? (
+          <div className={styles.timelineOverviewIndexRow}>
+            <h2 className={styles.overviewTitle}>{title}</h2>
+            <span className={styles.overviewCta}>
+              {ctaLabel}
+              <span aria-hidden="true">→</span>
+            </span>
+          </div>
+        ) : (
+          <h2 className={styles.overviewTitle}>{title}</h2>
+        )}
         {summary ? <p className={styles.overviewSummary}>{summary}</p> : null}
-        <span className={styles.overviewCta}>
-          {ctaLabel}
-          <span aria-hidden="true">→</span>
-        </span>
+        {isTimelineIndex ? null : (
+          <span className={styles.overviewCta}>
+            {ctaLabel}
+            <span aria-hidden="true">→</span>
+          </span>
+        )}
       </div>
     </a>
   );

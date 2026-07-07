@@ -24,58 +24,26 @@ function NarrativeSection({
       <div className={styles.sectionHeadingRow}>
         <h2 className={styles.sectionHeading}>{heading}</h2>
       </div>
-      <div
-        className={
-          reverse
-            ? `${styles.glossaryNarrativeGrid} ${styles.glossaryNarrativeGridReverse}`
-            : styles.glossaryNarrativeGrid
-        }
-      >
-        {reverse ? (
-          <>
-            {figure ? (
-              <figure
-                className={
-                  variant === "history"
-                    ? `${styles.glossaryNarrativeFigure} ${styles.glossaryNarrativeFigureHistory}`
-                    : styles.glossaryNarrativeFigure
-                }
-              >
-                <img src={figure.image} alt={figure.alt} />
-                {figure.caption ? <figcaption>{figure.caption}</figcaption> : null}
-              </figure>
-            ) : null}
-            {body.length > 0 ? (
-              <div className={styles.longformText}>
-                {body.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
-            ) : null}
-          </>
-        ) : (
-          <>
-            {body.length > 0 ? (
-              <div className={styles.longformText}>
-                {body.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-              </div>
-            ) : null}
-            {figure ? (
-              <figure
-                className={
-                  variant === "history"
-                    ? `${styles.glossaryNarrativeFigure} ${styles.glossaryNarrativeFigureHistory}`
-                    : styles.glossaryNarrativeFigure
-                }
-              >
-                <img src={figure.image} alt={figure.alt} />
-                {figure.caption ? <figcaption>{figure.caption}</figcaption> : null}
-              </figure>
-            ) : null}
-          </>
-        )}
+      <div className={styles.glossaryNarrativeFlow}>
+        {figure ? (
+          <figure
+            className={[
+              styles.glossaryNarrativeFigure,
+              reverse ? styles.glossaryNarrativeFigureLeft : styles.glossaryNarrativeFigureRight,
+              variant === "history" ? styles.glossaryNarrativeFigureHistory : styles.glossaryNarrativeFigureIntro
+            ].join(" ")}
+          >
+            <img src={figure.image} alt={figure.alt} />
+            {figure.caption ? <figcaption>{figure.caption}</figcaption> : null}
+          </figure>
+        ) : null}
+        {body.length > 0 ? (
+          <div className={styles.longformText}>
+            {body.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        ) : null}
       </div>
     </section>
   );
