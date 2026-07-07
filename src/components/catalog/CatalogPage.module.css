@@ -484,7 +484,8 @@
 }
 
 .conceptSourceMediaGrid {
-  gap: 6px;
+  column-gap: 4px;
+  row-gap: 4px;
 }
 
 .mediaMosaicSingle {

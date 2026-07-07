@@ -118,7 +118,9 @@ function createSeededOrder<T>(
 function createHomePageContent(locale: Locale): HomePageData {
   const catalog = getCatalogContent(locale);
   const featuredConcepts = catalog.concepts.filter((entry) => entry.featuredOnHome);
-  const heroSlides = featuredConcepts
+  const homepageConceptPool =
+    featuredConcepts.length > 3 ? featuredConcepts : catalog.concepts;
+  const heroSlides = homepageConceptPool
     .map((entry) => ({
       title: entry.title,
       subtitle: entry.heroSubtitle,
@@ -188,7 +190,7 @@ function createHomePageContent(locale: Locale): HomePageData {
       }
     },
     heroSlides,
-    conceptCards: featuredConcepts
+    conceptCards: homepageConceptPool
       .map((entry) => ({
         title: entry.title,
         description: entry.summary,

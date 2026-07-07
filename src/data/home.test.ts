@@ -24,6 +24,9 @@ test("homePageData provides the frontpage sections needed by the homepage", () =
   assert.ok(homePageData.heroSlides.some((slide) => slide.href === "/concepts/utility"));
   assert.ok(homePageData.heroSlides.some((slide) => slide.href === "/concepts/fusion"));
   assert.ok(homePageData.heroSlides.some((slide) => slide.href === "/concepts/harmony"));
+  assert.ok(homePageData.heroSlides.some((slide) => slide.href === "/concepts/ritual-order"));
+  assert.ok(homePageData.heroSlides.some((slide) => slide.href === "/concepts/vessel-and-meaning"));
+  assert.ok(homePageData.heroSlides.some((slide) => slide.href === "/concepts/refined-craft"));
   assert.ok(homePageData.objectCards.length >= 6);
   assert.ok(homePageData.timelineItems.length >= 5);
   assert.equal(homePageData.sections.timeline.actionLabel, "进入时代长廊");
@@ -71,6 +74,14 @@ test("selectHomepageConceptCards returns three unique cards in a seeded order", 
 
   assert.equal(selected.length, 3);
   assert.equal(new Set(selected.map((item) => item.href)).size, 3);
+  assert.ok(
+    selected.some(
+      (item) =>
+        item.href === "/concepts/ritual-order" ||
+        item.href === "/concepts/vessel-and-meaning" ||
+        item.href === "/concepts/refined-craft"
+    )
+  );
 });
 
 test("selectHomepageHeroSlides returns three unique slides in a seeded order", () => {
@@ -78,6 +89,14 @@ test("selectHomepageHeroSlides returns three unique slides in a seeded order", (
 
   assert.equal(selected.length, 3);
   assert.equal(new Set(selected.map((item) => item.href)).size, 3);
+  assert.ok(
+    selected.some(
+      (item) =>
+        item.href === "/concepts/ritual-order" ||
+        item.href === "/concepts/vessel-and-meaning" ||
+        item.href === "/concepts/refined-craft"
+    )
+  );
 });
 
 test("getActiveHeroSlide returns null when the hero has no slides", () => {
