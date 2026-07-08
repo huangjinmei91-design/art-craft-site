@@ -507,6 +507,7 @@
 .insightCard,
 .glossaryStep,
 .videoCard {
+  margin: 0;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: #fffdf8;
